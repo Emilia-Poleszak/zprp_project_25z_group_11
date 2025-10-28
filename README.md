@@ -6,6 +6,15 @@
 
 A short description of the project.
 
+## Data Generators
+
+In order to run generating raw data file for Reber experiment, run:
+
+```bash
+py .\zprp_project_25z_group_11\generators\reber.py
+
+```
+
 ## Project Organization
 
 ```
