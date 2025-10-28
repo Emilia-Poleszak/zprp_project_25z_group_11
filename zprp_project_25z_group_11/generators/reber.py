@@ -29,12 +29,12 @@ class EmbeddedReberGrammar:
 
         :return: list of letters
         """
-        sequence = choice(['T', 'P'])
+        sequence = 'B' + choice(['T', 'P'])
         state = 0
         while state < len(self.grammar):
             transition, state = choice(self.grammar[state])
             sequence += transition
-
+        sequence += sequence[1] + 'E'
         return sequence
 
 
