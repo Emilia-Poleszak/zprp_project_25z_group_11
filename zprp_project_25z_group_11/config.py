@@ -21,6 +21,12 @@ MODELS_DIR = PROJ_ROOT / "models"
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
+# Files
+RAW_REBER_DATA_FILENAME = 'reber.txt'
+
+# Datasets parameters
+REBER_SAMPLES = 10000
+
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
 try:
