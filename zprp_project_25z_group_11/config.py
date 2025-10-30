@@ -23,9 +23,13 @@ FIGURES_DIR = REPORTS_DIR / "figures"
 
 # Files
 RAW_REBER_DATA_FILENAME = 'reber.txt'
+ADDING_DATA_FILENAME = 'adding.txt'
+MULTIPLICATION_DATA_FILENAME = 'multiplication.txt'
 
 # Datasets parameters
 REBER_SAMPLES = 10000
+ADDING_SEQUENCES = 2560
+MULTIPLICATION_SEQUENCES = 2560
 
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
