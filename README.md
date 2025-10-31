@@ -14,6 +14,12 @@ In order to run generating raw data file for Reber experiment, run:
 py .\zprp_project_25z_group_11\generators\reber.py
 
 ```
+In order to run generating raw data file for adding and multiplication experiment, run:
+
+```bash
+py .\zprp_project_25z_group_11\generators\components.py
+
+```
 
 ## Project Organization
 
