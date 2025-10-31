@@ -5,11 +5,20 @@ from zprp_project_25z_group_11.config import RAW_DATA_DIR, ADDING_DATA_FILENAME,
 class Components:
 
     def __init__(self, min_no_samples: int, value_range: tuple[float, float]):
+        """Data generator for adding and multiplication experiment
+
+        :param min_no_samples: minimal number of samples in sequence
+        :param value_range: value range for first component of element in sequence
+        """
         self.min_no_samples = min_no_samples
         self.low, self.high = value_range
 
 
-    def generate(self):
+    def generate(self) -> tuple[list[tuple[float, float]], float]:
+        """Generate one sequence for adding/multiplication experiment
+
+        :return: list of components and target value
+        """
         length = random.randint(self.min_no_samples, int(self.min_no_samples + self.min_no_samples / 10))
 
         first = [random.uniform(self.low, self.high) for _ in range(length)]
@@ -35,6 +44,11 @@ class Components:
         return list(zip(first, second)), target
 
     def save(self, n_sequences, output_file):
+        """
+
+        :param n_sequences: number of sequences
+        :param output_file: specified name of output file
+        """
         with open(RAW_DATA_DIR / output_file, "w") as f:
             for _ in range(n_sequences):
                 seq, target = self.generate()
