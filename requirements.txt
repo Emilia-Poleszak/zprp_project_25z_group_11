@@ -6,3 +6,5 @@ ruff
 tqdm
 typer
 -e .
+lru-pytorch
+numpy
