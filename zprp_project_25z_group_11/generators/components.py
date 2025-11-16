@@ -1,5 +1,7 @@
 import random
 
+from zprp_project_25z_group_11.config import RAW_DATA_DIR
+
 class Components:
 
     def __init__(self, min_no_samples: int, value_range: tuple[float, float]):
@@ -40,6 +42,19 @@ class Components:
         target = 0.5 + (x1 + x2) / 4.0 # needs modification cause multiplication has different target
 
         return list(zip(first, second)), target
+
+    def save(self, output_file):
+        """Saves single sequence to file.
+
+        :param output_file: specified name of output file
+        :return: components sequence with target value
+        """
+        with open(RAW_DATA_DIR / output_file, "a") as f:
+            seq, target = self.generate()
+            for a, b in seq:
+                f.write(f"{a:.6f} {b:.1f}\n")
+            f.write(f"# target {target:.6f}\n\n")
+            return seq, target
 
 if __name__ == '__main__':
     gen4 = Components(min_no_samples=100, value_range=(-1.0, 1.0))

@@ -28,7 +28,7 @@ def train_experiment_4(model_path):
     correct_streak = 0
     total_loss = 0
     for step in tqdm(range(100000)):
-        seq, target = generator.generate()
+        seq, target = generator.save('adding100.txt')
         seq = torch.tensor(seq, dtype=torch.float32).unsqueeze(1).to(device)  # (T,1,D)
         target = torch.tensor(target, dtype=torch.float32).to(device)
 
@@ -41,12 +41,13 @@ def train_experiment_4(model_path):
         total_loss += loss.item()
 
         predicted = output[-1].item()
-        if abs(predicted - target.item()) < 0.5:  # tolerance-based correctness
+        if abs(predicted - target.item()) < 0.04:  # tolerance-based correctness
             correct_streak += 1
         else:
             correct_streak = 0
 
         avg_loss = total_loss / (step + 1)
+        logger.info(f"Error {abs(predicted - target.item())}, Avg loss: {avg_loss}, correct streak: {correct_streak}...")
         if avg_loss < 0.01 and correct_streak >= 2000:
             logger.success(f"Training converged at step {step}.")
             break
