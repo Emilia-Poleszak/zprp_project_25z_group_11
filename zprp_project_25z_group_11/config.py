@@ -27,9 +27,16 @@ ADDING_DATA_FILENAME = 'adding.txt'
 MULTIPLICATION_DATA_FILENAME = 'multiplication.txt'
 
 # Datasets parameters
-REBER_SAMPLES = 10000
+REBER_SAMPLES = 256 # This value is mentioned in original Hochreiter experiment
 ADDING_SEQUENCES = 2560
 MULTIPLICATION_SEQUENCES = 2560
+
+# Experiment setup parameters
+TRAIN_TEST_SPLIT = 0.8
+
+# Utils
+
+REBER_ALPHABET = {c: i for i, c in enumerate('BTSXPVE')}
 
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135

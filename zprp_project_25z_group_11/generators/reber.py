@@ -1,6 +1,7 @@
 from random import choice
 
-from zprp_project_25z_group_11.config import RAW_DATA_DIR, REBER_SAMPLES
+from zprp_project_25z_group_11.config import RAW_DATA_DIR, REBER_SAMPLES, RAW_REBER_DATA_FILENAME
+
 
 class EmbeddedReberGrammar:
     def __init__(self):
@@ -20,7 +21,7 @@ class EmbeddedReberGrammar:
 
         :param no_samples: Number of Embedded Reber Grammar sequences to save
         """
-        with open(RAW_DATA_DIR / 'reber.txt', 'w') as file:
+        with open(RAW_DATA_DIR / RAW_REBER_DATA_FILENAME, 'w') as file:
             for i in range(no_samples):
                 file.write(self.generate() + '\n')
 

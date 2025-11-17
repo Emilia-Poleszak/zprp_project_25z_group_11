@@ -1,8 +1,8 @@
-loguru
-mkdocs
-pip
-python-dotenv
-ruff
-tqdm
-typer
+loguru~=0.7.3
+python-dotenv~=1.2.1
+tqdm~=4.67.1
+typer~=0.20.0
 -e .
+
+zprp_project_25z_group_11~=0.0.1
+torch~=2.9.1
