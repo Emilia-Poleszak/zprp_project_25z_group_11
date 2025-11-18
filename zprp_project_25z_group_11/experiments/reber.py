@@ -1,15 +1,12 @@
 import random
+import numpy as np
 
-import torch
-from numpy.random import shuffle
 from torch import tensor, optim, Tensor
 import torch.nn as nn
-
-from torch.utils.data import random_split, TensorDataset, DataLoader
+from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-from torch.nn.utils.rnn import pad_sequence
+
 from LRU_pytorch import LRU
-import numpy as np
 
 from zprp_project_25z_group_11.config import RAW_DATA_DIR, TRAIN_TEST_SPLIT, RAW_REBER_DATA_FILENAME, REBER_ALPHABET
 
@@ -44,7 +41,7 @@ class ReberExperiment:
 
         batch_one_hot = [self.string_to_one_hot(seq[:-1], REBER_ALPHABET) for seq in sequences]
         random.shuffle(batch_one_hot)
-        # TODO: decide if max sequence length should be constant for every experiment exec
+        # TODO: check if padding is necessary
         # batch_padded = pad_sequence(batch_one_hot, batch_first=True, padding_value=0)
 
         self.training_set = batch_one_hot[:n_train]
@@ -59,58 +56,75 @@ class ReberExperiment:
             raise Exception('No training data set.')
         loader = DataLoader(self.training_set, shuffle=True, batch_size=1)
         running_loss = 0.
-        last_loss = 0.
+        no_success = 0
         for i, data in enumerate(loader):
             data = data[0]
-            # print(f'Size: {data.size()}')
 
             inputs = data[:-1, :].unsqueeze(0)
             targets = data[1:, :].argmax(dim=-1).unsqueeze(0)
-            # print(f'Inputs: {inputs.shape}')
-            # print(f'Targets: {targets.shape}')
 
             self.optimizer.zero_grad()
 
-            outputs = []
-            for t in range(inputs.size(1)):
-                out = self.model(inputs[:, t, :])
-                outputs.append(out)
+            outputs = self.model(inputs)
+            if isinstance(outputs, tuple):
+                outputs = outputs[0]
 
-            outputs = torch.stack(outputs, dim=1)
-            # print(f'Outputs: {outputs}')
+            # outputs = []
+            # loss = 0
+            # for t in range(inputs.size(1)):
+            #     out = self.model(inputs[:, t, :])
+            #     loss += self.loss_fn(out, targets[:, t])
+            #     outputs.append(out)
+            #
+            # outputs = torch.stack(outputs, dim=1)
+
+            no_success += (outputs.argmax(dim=-1).equal(targets))
 
             loss = self.loss_fn(outputs.reshape(-1, 7), targets.reshape(-1))
             loss.backward()
-
             self.optimizer.step()
 
             running_loss += loss.item()
-            if i % 100 == 99:
-                last_loss = running_loss / 100  # loss per batch
-                # print('  batch {} loss: {}'.format(i + 1, last_loss))
-                tb_x = epoch * len(self.training_set) + i + 1
-                tb_writer.add_scalar('Loss/train', last_loss, tb_x)
-                running_loss = 0.
 
-        return last_loss
+        running_loss /= len(loader)
+
+        print(f'Successful predictions: {format(no_success)} / {len(loader)}')
+        return running_loss, no_success == len(loader)
 
     def eval(self):
         """
         Evaluates the model on validation set.
         :return:
         """
-        ...
+        self.model.eval()
+        loader = DataLoader(self.validation_set, batch_size=1)
+        total_tokens = 0
+        correct_tokens = 0
+        for batch in loader:
+            batch = batch[0]
+            inputs = batch[:-1, :].unsqueeze(0)
+            targets = batch[1:, :].argmax(dim=-1).unsqueeze(0)
+
+            outputs = self.model(inputs)
+            if isinstance(outputs, tuple):
+                outputs = outputs[0]
+
+            total_tokens += targets.size(1)
+            correct_tokens += (outputs.argmax(dim=-1).equal(targets))
+        return correct_tokens / total_tokens
 
     def run(self):
         epoch = 0
         writer = SummaryWriter()
         while True:
-            loss = self.train(epoch, writer)
+            loss, success = self.train(epoch, writer)
+            val_acc = self.eval()
             print('epoch {} loss: {}'.format(epoch, loss))
+            print('Val acc: {}'.format(val_acc))
+            self.model.eval()
             epoch += 1
-            if epoch >= 100:
+            if success:
                 break
-
 
     @staticmethod
     def string_to_one_hot(s: str, mapping: dict[str, int]) -> Tensor:
@@ -121,9 +135,9 @@ class ReberExperiment:
 
 # TODO: move this to other file after finishing experiment implementation (this is just for tests)
 def main():
-    model = LRU(in_features=7, out_features=7, state_features=28)
-    optimizer = optim.Adam(model.parameters())
-    writer = SummaryWriter()
+    model = LRU(in_features=7, out_features=7, state_features=64)
+    optimizer = optim.SGD(model.parameters(), lr=0.2)
+    # writer = SummaryWriter()
 
     reber = ReberExperiment(model, optimizer)
     reber.setup()
