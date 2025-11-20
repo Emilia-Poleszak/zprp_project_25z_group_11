@@ -5,18 +5,25 @@ from tqdm import tqdm
 import typer
 
 from zprp_project_25z_group_11.config import MODELS_DIR, PROCESSED_DATA_DIR
-from zprp_project_25z_group_11.modeling.exp4_training import train_experiment_4
 
 app = typer.Typer()
 
 
 @app.command()
 def main(
-        model_path: Path = MODELS_DIR / "lru_model.pt",
-        experiment: int = typer.Option(4, help="Which experiment to run (1, 4, 5)"),
+    # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
+    features_path: Path = PROCESSED_DATA_DIR / "features.csv",
+    labels_path: Path = PROCESSED_DATA_DIR / "labels.csv",
+    model_path: Path = MODELS_DIR / "model.pkl",
+    # -----------------------------------------
 ):
-    if experiment == 4:
-        train_experiment_4(model_path)
+    # ---- REPLACE THIS WITH YOUR OWN CODE ----
+    logger.info("Training some model...")
+    for i in tqdm(range(10), total=10):
+        if i == 5:
+            logger.info("Something happened for iteration 5.")
+    logger.success("Modeling training complete.")
+    # -----------------------------------------
 
 
 if __name__ == "__main__":

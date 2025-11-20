@@ -41,20 +41,16 @@ class Components:
         x2 = first[marked_two_idx]
         target = 0.5 + (x1 + x2) / 4.0 # needs modification cause multiplication has different target
 
+        self.save(list(zip(first, second)), target)
         return list(zip(first, second)), target
 
-    def save(self, output_file):
-        """Saves single sequence to file.
-
-        :param output_file: specified name of output file
-        :return: components sequence with target value
-        """
-        with open(RAW_DATA_DIR / output_file, "a") as f:
-            seq, target = self.generate()
+    def save(self, seq, target):
+        """Saves single sequence to file."""
+        filename = 'adding' + str(self.min_no_samples) + '.txt'
+        with open(RAW_DATA_DIR / filename, "a") as f:
             for a, b in seq:
                 f.write(f"{a:.6f} {b:.1f}\n")
             f.write(f"# target {target:.6f}\n\n")
-            return seq, target
 
 if __name__ == '__main__':
     gen4 = Components(min_no_samples=100, value_range=(-1.0, 1.0))
