@@ -10,7 +10,7 @@ class Multiplication(nn.Module):
     def __init__(self):
         super().__init__()
 
-        hidden_dim = 32
+        hidden_dim = 128
 
         self.lru = LRU(
             in_features=2,
@@ -19,9 +19,10 @@ class Multiplication(nn.Module):
         )
         self.head = nn.Linear(hidden_dim, 1)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=1e-4)
+        self.optimizer = optim.Adam(self.parameters(), lr=1e-3)
         self.generator = Components(min_no_samples=100, value_range=(0.0, 1.0))
         self.criterion = nn.SmoothL1Loss(beta=0.04)
+        self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=1000, gamma=0.5)
 
     def forward(self, seq):
         # seq: (1, T, 2)
@@ -36,7 +37,7 @@ class Multiplication(nn.Module):
         while True:
             i += 1
 
-            seq, target = self.generator.generate()
+            seq, target = self.generator.generate_multiplication()
             seq = tensor(seq, dtype=float32).unsqueeze(0)
             target = tensor([[target]], dtype=float32)
 
@@ -44,7 +45,9 @@ class Multiplication(nn.Module):
             output = self(seq)
             loss = self.criterion(output, target)
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=1.0)
             self.optimizer.step()
+            self.scheduler.step()
 
             abs_error = torch.abs(output - target).item()
 
@@ -53,8 +56,10 @@ class Multiplication(nn.Module):
 
             if len(errors) == 2000 and sum(errors) <= 13:
                 break
+
             if i % 100 == 0:
-                print(f"iter: {i}, errors: {sum(errors)}/2000, loss: {loss.item():.4f}")
+                avg_error = sum(errors[-100:]) / 100
+                print(f"iter: {i}, errors: {sum(errors)}/2000, loss: {avg_error:.4f}")
 
 
 if __name__ == "__main__":
