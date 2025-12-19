@@ -1,8 +1,9 @@
-loguru
+loguru~=0.7.3
 mkdocs
 pip
-python-dotenv
+python-dotenv~=1.2.1
 ruff
-tqdm
-typer
+tqdm~=4.67.1
+typer~=0.20.0
 -e .
+torch~=2.9.1
