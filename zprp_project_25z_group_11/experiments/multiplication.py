@@ -7,6 +7,9 @@ from zprp_project_25z_group_11.generators.components import Components
 
 
 class Multiplication(nn.Module):
+    """
+    Implementation of multiplication experiment with LRU architecture.
+    """
     def __init__(self):
         super().__init__()
 
@@ -38,8 +41,12 @@ class Multiplication(nn.Module):
         while True:
             i += 1
 
+            # generate new data:
             # seq, target = self.generator.generate_multiplication()
+
+            # get data from file:
             seq, target, start_line_number = self.generator.get_data(start_line_number)
+
             seq = tensor(seq, dtype=float32).unsqueeze(0)
             target = tensor([[target]], dtype=float32)
 
@@ -56,6 +63,7 @@ class Multiplication(nn.Module):
             errors.append(abs_error > 0.04)
             errors = errors[-2000:]
 
+            # training stops when in last 2000 predictions there are 13 or fewer errors
             if len(errors) == 2000 and sum(errors) <= 13:
                 break
 

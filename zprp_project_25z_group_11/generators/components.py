@@ -75,7 +75,7 @@ class Components:
 
     def save(self, n_sequences, output_file):
         """
-
+        Save training data in txt file.
         :param n_sequences: number of sequences
         :param output_file: specified name of output file
         """
@@ -95,6 +95,11 @@ class Components:
                     f.write(f"{target:.6f}\n")
 
     def get_data(self, start_line_number):
+        """
+        Reads a batch of training data from source file.
+        :param start_line_number: number of the first line of a new data sequence, int.
+        :return: input data, target value and next starting line number.
+        """
         with open(RAW_DATA_DIR/MULTIPLICATION_DATA_FILENAME, "r") as f:
             for _ in range(start_line_number):
                 next(f)
