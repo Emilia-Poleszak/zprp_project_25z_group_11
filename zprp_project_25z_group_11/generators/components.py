@@ -92,7 +92,27 @@ class Components:
                     seq, target = self.generate_multiplication()
                     for a, b in seq:
                         f.write(f"{a:.6f} {b:.1f}\n")
-                    f.write(f"# target {target:.6f}\n\n")
+                    f.write(f"{target:.6f}\n")
+
+    def get_data(self, start_line_number):
+        with open(RAW_DATA_DIR/MULTIPLICATION_DATA_FILENAME, "r") as f:
+            for _ in range(start_line_number):
+                next(f)
+
+            data = []
+
+            for line in f:
+                start_line_number += 1
+                elements = line.split()
+                if len(elements) == 1:
+                    target = float(line)
+                    break
+                else:
+                    value, marker = map(float, elements)
+                    data.append((value, marker))
+
+            return data, target, start_line_number
+
 
 if __name__ == '__main__':
     gen4 = Components(min_no_samples=100, value_range=(-1.0, 1.0))

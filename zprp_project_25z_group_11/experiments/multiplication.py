@@ -33,11 +33,13 @@ class Multiplication(nn.Module):
     def train_loop(self):
         i = 0
         errors = []
+        start_line_number = 0
 
         while True:
             i += 1
 
-            seq, target = self.generator.generate_multiplication()
+            # seq, target = self.generator.generate_multiplication()
+            seq, target, start_line_number = self.generator.get_data(start_line_number)
             seq = tensor(seq, dtype=float32).unsqueeze(0)
             target = tensor([[target]], dtype=float32)
 
