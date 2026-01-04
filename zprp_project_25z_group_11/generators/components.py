@@ -25,21 +25,21 @@ class Components:
         second = [0.0] * length
 
         marked_one_idx = random.randint(0, min(9, length - 1))
-        possible_indices = [i for i in range(length // 2 - 1) if i != marked_one_idx]
-        marked_two_idx = random.choice(possible_indices) if possible_indices else marked_one_idx
-
         second[marked_one_idx] = 1.0
+        x1 = first[marked_one_idx]
+
+        possible_indices = [i for i in range(length // 2 - 1) if i != marked_one_idx]
+        marked_two_idx = random.choice(possible_indices[:self.min_no_samples // 2 - 1]) if possible_indices else marked_one_idx
         second[marked_two_idx] = 1.0
+        x2 = first[marked_two_idx]
 
         if marked_one_idx == 0:
-            first[0] = 0.0
-        else:
-            second[0] = -1.0
+            x1 = 0.0
+
+        second[0] = -1.0
         second[-1] = -1.0
 
-        x1 = first[marked_one_idx]
-        x2 = first[marked_two_idx]
-        target = 0.5 + (x1 + x2) / 4.0 # needs modification cause multiplication has different target
+        target = 0.5 + (x1 + x2) / 4.0
 
         self.save(list(zip(first, second)), target)
         return list(zip(first, second)), target
