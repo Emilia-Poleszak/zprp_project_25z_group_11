@@ -21,6 +21,14 @@ py .\zprp_project_25z_group_11\generators\components.py
 
 ```
 
+## Experiments
+
+To execute Embedded Reber Grammar experiment, run:
+
+```bash
+py .\zprp_project_25z_group_11\experiments\reber.py
+```
+
 ## Project Organization
 
 ```
