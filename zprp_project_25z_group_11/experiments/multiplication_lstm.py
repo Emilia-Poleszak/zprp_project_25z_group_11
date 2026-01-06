@@ -1,41 +1,44 @@
 from torch import optim
 import torch
 import torch.nn as nn
-from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence, pad_packed_sequence
-
+from torch.nn.utils.rnn import pad_sequence, pad_packed_sequence, pack_padded_sequence
 
 from zprp_project_25z_group_11.generators.components import Components
 
-class Multiplication_GRU(nn.Module):
+class Multiplication_LSTM(nn.Module):
     """
-    Implementation of multiplication experiment with GRU architecture.
+    Implementation of multiplication experiment with LSTM architecture.
     """
     def __init__(self):
         super().__init__()
 
         hidden_dim = 128
 
-        self.gru = nn.GRU(
+        self.lstm = nn.LSTM(
             input_size=2,
             hidden_size=hidden_dim,
             batch_first=True
         )
         self.head = nn.Linear(hidden_dim, 1)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=1e-3)
+        self.optimizer = optim.Adam(self.parameters(), lr=1e-2)
         self.generator = Components(min_no_samples=100, value_range=(0.0, 1.0))
         self.criterion = nn.MSELoss()
 
-        for name, param in self.gru.named_parameters():
+    def _init_lstm(self):
+        for name, param in self.lstm.named_parameters():
             if "bias" in name:
-                param.data += 1.0
+                h = self.hidden_size
+                param.data.zero_()
+                param.data[h:2 * h] = 3.0
 
     def forward(self, x, lengths):
         packed = pack_padded_sequence(x, lengths, batch_first=True, enforce_sorted=False)
-        packed_out, _ = self.gru(packed)
+        packed_out, _ = self.lstm(packed)
         out, _ = pad_packed_sequence(packed_out, batch_first=True)
-        last = out[torch.arange(x.size(0)), lengths - 1]
-        return self.head(last)
+        last_out = out[torch.arange(x.size(0)), lengths - 1]
+
+        return self.head(last_out)
 
     def train_loop(self):
         i = 0
@@ -51,7 +54,7 @@ class Multiplication_GRU(nn.Module):
             # seq, target = self.generator.generate_multiplication()
 
             # get data from file:
-            seq, target, start_line_number = self.generator.get_data(start_line_number)
+            # seq, target, start_line_number = self.generator.get_data(start_line_number)
             seq_batch = []
             target_batch = []
             seq_lengths = []
@@ -67,23 +70,14 @@ class Multiplication_GRU(nn.Module):
 
             seq_padded = pad_sequence(seq_batch, batch_first=True)
 
-            packed = pack_padded_sequence(seq_padded, seq_lengths, batch_first=True, enforce_sorted=False)
-
             self.optimizer.zero_grad()
-
-            packed_out, _ = model.gru(packed)
-            out, _ = pad_packed_sequence(packed_out, batch_first=True)
-
-            last_out = out[torch.arange(8), seq_lengths - 1]
-
-            output = model.head(last_out)
+            output = self(seq_padded, seq_lengths)
             loss = self.criterion(output, target_batch)
-
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=1.0)
             self.optimizer.step()
 
-            abs_error = torch.abs(output - target).view(-1)
+            abs_error = torch.abs(output - target_batch).view(-1)
             tmp = (abs_error > 0.04).float()
             errors.extend(tmp.tolist())
             errors = errors[-2000:]
@@ -109,13 +103,7 @@ class Multiplication_GRU(nn.Module):
             seq_tensor = torch.tensor(seq, dtype=torch.float32).unsqueeze(0)
             length = torch.tensor([len(seq)])
 
-            packed = pack_padded_sequence(seq_tensor, length, batch_first=True, enforce_sorted=False)
-
-            packed_out, _ = model.gru(packed)
-            out, _ = pad_packed_sequence(packed_out, batch_first=True)
-
-            last_out = out[0, length.item() - 1]
-            output = model.head(last_out)
+            output = self(seq_tensor, length)
 
             target_tensor = torch.tensor([[target]], dtype=torch.float32)
             abs_error = torch.abs(output - target_tensor).item()
@@ -131,6 +119,6 @@ class Multiplication_GRU(nn.Module):
 
 
 if __name__=="__main__":
-    model = Multiplication_GRU()
+    model = Multiplication_LSTM()
     model.train_loop()
     model.evaluate()
