@@ -20,20 +20,19 @@ MODELS_DIR = PROJ_ROOT / "models"
 
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
+LOGS_DIR = REPORTS_DIR / "logs"
+ADDING_LOGS_DIR = LOGS_DIR / "adding"
 
 # Files
 RAW_REBER_DATA_FILENAME = 'reber.txt'
 
 # Datasets parameters
 REBER_SAMPLES = 10000
-ADDING_SEQUENCES = 2560
 MULTIPLICATION_SEQUENCES = 2560
 
 # Adding experiment 4 parameters
-LR = 1e-3
-STATE_FEATURES = 4
-IN_FEATURES = 2
-OUT_FEATURES = 1
+ADDING_LR = 1e-3
+ADDING_HIDDEN_SIZE = 128
 
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
