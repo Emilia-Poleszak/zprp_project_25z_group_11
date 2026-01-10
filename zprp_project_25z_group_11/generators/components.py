@@ -48,7 +48,7 @@ class Components:
 
         :return: list of components and target value
         """
-        length = random.randint(self.min_no_samples, int(self.min_no_samples + self.min_no_samples / 10))
+        length = self.min_no_samples
 
         first = [random.uniform(self.low, self.high) for _ in range(length)]
         second = [0.0] * length

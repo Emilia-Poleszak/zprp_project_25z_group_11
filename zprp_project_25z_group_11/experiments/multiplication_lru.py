@@ -2,7 +2,6 @@ from torch import optim, tensor, float32
 import torch
 import torch.nn as nn
 from LRU_pytorch import LRU
-from torch.nn.utils.rnn import pad_sequence
 
 from zprp_project_25z_group_11.generators.components import Components
 
@@ -39,8 +38,15 @@ class Multiplication_LRU(nn.Module):
         return self.head(last)
 
     def train_loop(self):
+        """
+        Trains LRU model with generated data, with possible switch to
+        getting data from .txt file (commented line 61).
+        Training stops when in last 2000 predictions is 13 or fewer errors.
+        Absolute error threshold is 0.04.
+        """
         i = 0
         errors = []
+        correct = []
         start_line_number = 0
 
         self.train()
@@ -49,49 +55,55 @@ class Multiplication_LRU(nn.Module):
             i += 1
 
             # generate new data:
-            # seq, target = self.generator.generate_multiplication()
+            seq, target = self.generator.generate_multiplication()
 
             # get data from file:
             # seq, target, start_line_number = self.generator.get_data(start_line_number)
-            seq_batch = []
-            target_batch = []
-            seq_lengths = []
+            # seq_batch = []
+            # target_batch = []
+            # seq_lengths = []
+            #
+            # for _ in range(8):
+            #     seq, target = self.generator.generate_multiplication()
+            #     seq_batch.append(torch.tensor(seq, dtype=torch.float32))
+            #     seq_lengths.append(len(seq))
+            #     target_batch.append(target)
 
-            for _ in range(8):
-                seq, target = self.generator.generate_multiplication()
-                seq_batch.append(torch.tensor(seq, dtype=torch.float32))
-                seq_lengths.append(len(seq))
-                target_batch.append(target)
-
-            seq_lengths = torch.tensor(seq_lengths)
-            target_batch = torch.tensor(target_batch, dtype=torch.float32).unsqueeze(1)
-
-            seq_padded = pad_sequence(seq_batch, batch_first=True)
+            sequence = tensor(seq, dtype=float32).unsqueeze(0)
+            targets = tensor([[target]], dtype=float32)
 
             self.optimizer.zero_grad()
-            output = self(seq_padded, seq_lengths)
-            loss = self.criterion(output, target_batch)
+
+            output = self.lru(sequence)
+            last_output = output[:, -1, :]
+            pred = self.head(last_output)
+            loss = self.criterion(pred, targets)
             loss.backward()
+
             torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=1.0)
             self.optimizer.step()
             self.scheduler.step()
 
-            abs_error = torch.abs(output - target_batch).view(-1)
-            tmp = (abs_error > 0.04).float()
-            errors.extend(tmp.tolist())
+            abs_error = torch.abs(pred - targets).item()
+            correct.append(abs_error < 0.04)
+            errors.append(abs_error)
             errors = errors[-2000:]
 
             # training stops when in last 2000 predictions there are 13 or fewer errors
-            if len(errors) == 2000 and sum(errors) <= 13:
+            if len(errors) == 2000 and (2000 - sum(correct)) <= 13:
                 break
 
             if i % 100 == 0:
-                avg_error = sum(errors[-100:]) / 100
-                err = sum(errors)
-                print(f"iter: {i}, errors: {err}/2000, loss: {avg_error:.4f}")
+                avg_error = sum(errors) / len(errors)
+                c = sum(correct)
+                print(f"iter: {i}, correct: {c}/2000, loss: {avg_error:.4f}")
 
     @torch.no_grad()
     def evaluate(self):
+        """
+        Evaluates model in 2000 iterations.
+        Absolute error threshold is 0.04.
+        """
         self.eval()
         errors = []
         correct = 0
@@ -100,13 +112,12 @@ class Multiplication_LRU(nn.Module):
             seq, target = self.generator.generate_multiplication()
 
             seq_tensor = torch.tensor(seq, dtype=torch.float32).unsqueeze(0)
+            target_tensor = torch.tensor([[target]], dtype=torch.float32)
             length = torch.tensor([len(seq)])
 
-            output = self(seq_tensor, length)
+            output = self.lru(seq_tensor, length)
 
-            target_tensor = torch.tensor([[target]], dtype=torch.float32)
             abs_error = torch.abs(output - target_tensor).item()
-
             errors.append(abs_error)
             if abs_error < 0.04:
                 correct += 1
