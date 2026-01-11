@@ -14,10 +14,9 @@ class Components:
         self.low, self.high = value_range
 
 
-    def generate(self, save: bool) -> tuple[list[tuple[float, float]], float]:
+    def generate(self) -> tuple[list[tuple[float, float]], float]:
         """Generate one sequence for adding/multiplication experiment
 
-        :param save: indicator whether to save the generated sequence
         :return: list of components and target value
         """
         first = [random.uniform(self.low, self.high) for _ in range(self.length)]
@@ -42,8 +41,6 @@ class Components:
 
         target = 0.5 + (x1 + x2) / 4.0
 
-        if save:
-            self.save(list(zip(first, second)), target)
         return list(zip(first, second)), target
 
     def save(self, seq: list[tuple[float, float]], target: float):

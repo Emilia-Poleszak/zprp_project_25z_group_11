@@ -39,9 +39,10 @@ Found by: Agnieszka Jegier
 
 **Comment:**
 
-Paper explores another solution to the vanishing gradient problem. 
-Performs experiments to test unitary recurrent matrices. 
-In context of our project it provides theoretical background for the issue.
+Paper explores another solution to the vanishing gradient problem, when 
+trying to learn long-term dependencies. 
+Performs experiments to test unitary recurrent matrices and compares to LSTM.
+Proposes algorithm for such problems, including adding problem that is analysed in the project.
 
 **Details:**
 

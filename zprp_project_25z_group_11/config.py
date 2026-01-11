@@ -30,7 +30,7 @@ RAW_REBER_DATA_FILENAME = 'reber.txt'
 REBER_SAMPLES = 10000
 MULTIPLICATION_SEQUENCES = 2560
 
-# Adding experiment 4 parameters
+# Adding experiment parameters
 ADDING_LR = 1e-3
 ADDING_HIDDEN_SIZE = 128
 
