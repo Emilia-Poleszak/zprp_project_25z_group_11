@@ -32,7 +32,7 @@ MULTIPLICATION_SEQUENCES = 2560
 
 # Adding experiment parameters
 ADDING_LR = 1e-3
-ADDING_HIDDEN_SIZE = 128
+ADDING_HIDDEN_SIZE = 64
 
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135

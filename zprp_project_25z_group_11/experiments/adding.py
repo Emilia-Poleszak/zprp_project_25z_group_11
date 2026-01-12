@@ -104,7 +104,6 @@ class Adding(nn.Module):
 
                 if avg_recent_error < 0.01:
                     print(f"\n*** SUCCESS at step {step}! ***")
-                    self.evaluate_model()
                     break
 
     def evaluate_model(self, num_samples=2560, threshold=0.04):
@@ -158,6 +157,7 @@ if __name__ == '__main__':
 
         adding = Adding(model, learning_rate=ADDING_LR, writer=writer)
         adding.train()
+        adding.evaluate_model()
 
         print(f"Experiment {i} completed.")
         writer.close()
