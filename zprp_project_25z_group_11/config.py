@@ -21,6 +21,7 @@ MODELS_DIR = PROJ_ROOT / "models"
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 LOGS_DIR = REPORTS_DIR / "logs"
+REBER_LOGS_DIR = LOGS_DIR / "reber"
 MULTIPLICATION_LOGS_DIR = LOGS_DIR / "multiplication"
 ADDING_LOGS_DIR = LOGS_DIR / "adding"
 
@@ -30,7 +31,8 @@ ADDING_DATA_FILENAME = 'adding.txt'
 MULTIPLICATION_DATA_FILENAME = 'multiplication.txt'
 
 # Datasets parameters
-REBER_SAMPLES = 10000
+REBER_SAMPLES = 512 # This value is mentioned in original Hochreiter experiment (train + test set)
+ADDING_SEQUENCES = 2560
 MULTIPLICATION_SEQUENCES = 2560
 ADDING_EVAL_SEQUENCES = 2560
 
@@ -49,6 +51,15 @@ MULTIPLICATION_SEQUENCE_LENGTH = 100
 MULTIPLICATION_RANGE = (0, 1)
 MULTIPLICATION_ALPHA = 0.9
 MULTIPLICATION_THRESHOLD = 0.04
+
+# Experiment setup parameters
+REBER_TRAIN_TEST_SPLIT = 0.5
+REBER_LEARNING_RATE = 0.2
+REBER_HIDDEN_SIZE = 64
+
+# Utils
+
+REBER_ALPHABET = {c: i for i, c in enumerate('BTSXPVE')}
 
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135

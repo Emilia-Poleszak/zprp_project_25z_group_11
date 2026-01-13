@@ -80,6 +80,14 @@ Multiplication:
 pytest .\tests\components_multiplication.py 
 ```
 
+## Experiments
+
+To execute Embedded Reber Grammar experiment, run:
+
+```bash
+py .\zprp_project_25z_group_11\experiments\reber.py
+```
+
 ## Project Organization
 
 ```
