@@ -9,7 +9,45 @@
 - **Week 2:**
   - Continued literature review and analysis of scientific papers.
   - Finalized data generators for training and testing.
- 
+- **Week 3:**
+  - Implementing Adding experiment
+  - First results of Adding experiment
+  - Implementing saving generated data to .txt file
+- **Week 4:**
+  - Implementing Reber experiment
+  - First results of Reber experiment
+  - Optimizing Reber experiment implementation
+  - 
+- **Week 5:**
+  - First stand-up. 
+  - Break from working on the project in order to prepare for a test.
+- **Week 6:**
+  - Implementing tasks from first stand-up
+- **Week 7:**
+  - Working on implementing LRU model in all experiment
+- **Week 8:**
+  - Working on implementing LRU model in all experiment
+  - 
+- **Week 9:**
+  - Implementing Multiplication experiment
+  - First results from Multiplication experiment
+- **Week 10:**
+  - Christmas break.
+- **Week 11:**
+  - Add code documentation in Multiplication experiment
+- **Week 12:**
+  - Second stand-up.
+  - Implementing tasks from second stand-up.
+  - Add project documentation
+  - Optimizing Adding experiment implementation
+  - Optimizing Multiplication experiment implementation
+- **Week 13:**
+  -
+
+Comments:
+- Implementing experiments got postponed by one week 
+- 
+
 ## Scientific papers and articles analysis
 1. https://www.researchgate.net/publication/13853244_Long_Short-Term_Memory
 
@@ -39,9 +77,10 @@ Found by: Agnieszka Jegier
 
 **Comment:**
 
-Paper explores another solution to the vanishing gradient problem. 
-Performs experiments to test unitary recurrent matrices. 
-In context of our project it provides theoretical background for the issue.
+Paper explores another solution to the vanishing gradient problem, when 
+trying to learn long-term dependencies. 
+Performs experiments to test unitary recurrent matrices and compares to LSTM.
+Proposes algorithm for such problems, including adding problem that is analysed in the project.
 
 **Details:**
 
