@@ -49,31 +49,6 @@ class Components:
 
         :return: list of components and target value
         """
-        first = [random.uniform(self.low, self.high) for _ in range(self.length)]
-        second = [0.0] * self.length
-
-        second[0] = -1.0
-        second[-1] = -1.0
-
-        marked_one_idx = random.randint(0, min(9, self.length - 1))
-        possible_indices = [i for i in range(self.length // 2 - 1) if i != marked_one_idx]
-        marked_two_idx = random.choice(possible_indices) if possible_indices else marked_one_idx
-
-        if marked_one_idx == 0:
-            x1 = 1.0
-        else:
-            x1 = first[marked_one_idx]
-            second[marked_one_idx] = 1.0
-
-        second[marked_two_idx] = 1.0
-        x2 = first[marked_two_idx]
-
-        target = x1 * x2
-
-        return list(zip(first, second)), target
-
-    def save(self, n_sequences: int, output_file: str) -> None:
-        """
         Save training data in txt file.
         :param n_sequences: number of sequences
         :param output_file: specified name of output file
