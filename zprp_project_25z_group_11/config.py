@@ -20,6 +20,8 @@ MODELS_DIR = PROJ_ROOT / "models"
 
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
+LOGS_DIR = REPORTS_DIR / "logs"
+MULTIPLICATION_LOGS_DIR = LOGS_DIR / "multiplication"
 
 # Files
 RAW_REBER_DATA_FILENAME = 'reber.txt'
@@ -30,6 +32,11 @@ MULTIPLICATION_DATA_FILENAME = 'multiplication.txt'
 REBER_SAMPLES = 10000
 ADDING_SEQUENCES = 2560
 MULTIPLICATION_SEQUENCES = 2560
+
+# Multiplication experiment parameters
+MULTIPLICATION_LEARNING_RATE = 0.001
+MULTIPLICATION_HIDDEN_SIZE = 64
+MULTIPLICATION_SEQUENCE_LENGTH = 100
 
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
