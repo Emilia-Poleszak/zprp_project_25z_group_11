@@ -1,6 +1,7 @@
+import argparse
 import random
 
-from zprp_project_25z_group_11.config import RAW_DATA_DIR
+from zprp_project_25z_group_11.config import RAW_DATA_DIR, ADDING_SEQUENCE_LENGTH, ADDING_DATA_FILENAME, MULTIPLICATION_DATA_FILENAME, ADDING_RANGE, MULTIPLICATION_RANGE, MULTIPLICATION_SEQUENCE_LENGTH
 
 class Components:
 
@@ -14,8 +15,8 @@ class Components:
         self.low, self.high = value_range
 
 
-    def generate(self) -> tuple[list[tuple[float, float]], float]:
-        """Generate one sequence for adding experiment
+    def generate_adding(self) -> tuple[list[tuple[float, float]], float]:
+        """Generate one sequence for adding/multiplication experiment
 
         :return: list of components and target value
         """
@@ -48,31 +49,6 @@ class Components:
 
         :return: list of components and target value
         """
-        first = [random.uniform(self.low, self.high) for _ in range(self.length)]
-        second = [0.0] * self.length
-
-        second[0] = -1.0
-        second[-1] = -1.0
-
-        marked_one_idx = random.randint(0, min(9, self.length - 1))
-        possible_indices = [i for i in range(self.length // 2 - 1) if i != marked_one_idx]
-        marked_two_idx = random.choice(possible_indices) if possible_indices else marked_one_idx
-
-        if marked_one_idx == 0:
-            x1 = 1.0
-        else:
-            x1 = first[marked_one_idx]
-            second[marked_one_idx] = 1.0
-
-        second[marked_two_idx] = 1.0
-        x2 = first[marked_two_idx]
-
-        target = x1 * x2
-
-        return list(zip(first, second)), target
-
-    def save(self, n_sequences, output_file):
-        """
         Save training data in txt file.
         :param n_sequences: number of sequences
         :param output_file: specified name of output file
@@ -92,13 +68,14 @@ class Components:
                         f.write(f"{a:.6f} {b:.1f}\n")
                     f.write(f"{target:.6f}\n")
 
-    def get_data(self, start_line_number):
+    def get_data(self, start_line_number: int, filename: str) -> tuple[list[tuple[float, float]], float, int]:
         """
         Reads a batch of training data from source file.
         :param start_line_number: number of the first line of a new data sequence, int.
+        :param filename: name of the file to read.
         :return: input data, target value and next starting line number.
         """
-        with open(RAW_DATA_DIR/MULTIPLICATION_DATA_FILENAME, "r") as f:
+        with open(RAW_DATA_DIR / filename, "r") as f:
             for _ in range(start_line_number):
                 next(f)
 
@@ -116,12 +93,20 @@ class Components:
 
             return data, target, start_line_number
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--task", type=str, required=True, choices=["adding", "multiplication"])
+    parser.add_argument("--num_sequences", type=int, required=True)
+    return parser.parse_args()
 
 if __name__ == '__main__':
-    gen4 = Components(length=100, value_range=(-1.0, 1.0))
-    gen4.save(ADDING_SEQUENCES, ADDING_DATA_FILENAME)
+    args = parse_args()
 
-    gen5 = Components(length=100, value_range=(0.0, 1.0))
-    gen5.save(MULTIPLICATION_SEQUENCES, MULTIPLICATION_DATA_FILENAME)
+    if args.task == "adding":
+        gen = Components(length=ADDING_SEQUENCE_LENGTH, value_range=ADDING_RANGE)
+        gen.save(args.num_sequences, ADDING_DATA_FILENAME)
 
+    elif args.task == "multiplication":
+        gen = Components(length=MULTIPLICATION_SEQUENCE_LENGTH, value_range=MULTIPLICATION_RANGE)
+        gen.save(args.num_sequences, MULTIPLICATION_DATA_FILENAME)
 

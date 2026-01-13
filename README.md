@@ -14,12 +14,34 @@ In order to run generating raw data file for Reber experiment, run:
 py .\zprp_project_25z_group_11\generators\reber.py
 
 ```
-In order to run generating raw data file for adding and multiplication experiment, run:
+In order to run generating raw data file for adding or multiplication experiment, run:
 
 ```bash
-py .\zprp_project_25z_group_11\generators\components.py
-
+py .\zprp_project_25z_group_11\generators\components.py --task TASK_NAME --num_sequences N
 ```
+#### Arguments:
+`--task`: Task to generate data for</br>
+* `adding`</br>
+* `multiplication` 
+
+`--num_sequences`: Number of sequences to generate (integer)</br>
+
+## Experiments
+
+### Adding experiment
+#### Usage
+```bash
+python .\zprp_project_25z_group_11\experiments\adding.py --model MODEL_NAME --data DATA_MODE
+```
+#### Arguments:
+`--model`: Model to use</br>
+* `LSTM` PyTorch implementation of long short-term memory (LSTM) RNN </br>
+* `GRU`  PyTorch implementation of gated recurrent unit (GRU) RNN </br>
+* `LRU`  Gothos/LRU-pytorch implementation of Linear Recurrent Units (LRU)
+
+`--data`: Data source</br>
+* `generate` generate new sequences while learning</br>
+* `file`     load sequences from file
 
 ## Project Organization
 
