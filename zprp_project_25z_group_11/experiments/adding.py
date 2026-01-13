@@ -7,11 +7,13 @@ import argparse
 
 from zprp_project_25z_group_11.generators.components import Components
 from zprp_project_25z_group_11.config import (
-    ADDING_LOGS_DIR, ADDING_LEARNING_RATE, ADDING_HIDDEN_SIZE, ADDING_EVAL_SEQUENCES, ADDING_SEQUENCE_LENGTH, ADDING_RANGE, ADDING_DATA_FILENAME)
+    ADDING_LOGS_DIR, ADDING_LEARNING_RATE, ADDING_HIDDEN_SIZE, ADDING_EVAL_SEQUENCES, ADDING_SEQUENCE_LENGTH,
+    ADDING_RANGE, ADDING_DATA_FILENAME, ADDING_THRESHOLD, ADDING_ALPHA)
 
 
 class Adding(nn.Module):
-    def __init__(self, model: nn.Module, sequence_length: int = 100, value_range: tuple[float, float] = (-1.0, 1.0), learning_rate: float = 1e-3, alpha : float = 0.9, writer: SummaryWriter | None = None,):
+    def __init__(self, model: nn.Module, sequence_length: int = 100, value_range: tuple[float, float] = (-1.0, 1.0),
+                 learning_rate: float = 1e-3, alpha: float = 0.9, writer: SummaryWriter | None = None):
         """
         The implementation of the forth Hochreiter experiment.
         It tests whether models can solve long time lag problems involving distributed, continues-valued representations.
@@ -26,7 +28,8 @@ class Adding(nn.Module):
 
         self.model = model
         self.head = nn.Linear(model.hidden_size if hasattr(model, "hidden_size") else model.out_features, 1)
-        self.optimizer = optim.RMSprop(list(self.model.parameters()) + list(self.head.parameters()), lr=learning_rate, alpha=alpha)
+        self.optimizer = optim.RMSprop(list(self.model.parameters()) + list(self.head.parameters()), lr=learning_rate,
+                                       alpha=alpha)
         self.loss_fn = nn.MSELoss()
         self.generator = Components(length=sequence_length, value_range=value_range)
         self.writer = writer
@@ -52,10 +55,12 @@ class Adding(nn.Module):
         last = out[:, -1, :]
         return self.head(last)
 
-    def train(self, max_steps=100000, data_mode="generate"):
+    def train(self, max_steps=100000, threshold=0.04, data_mode="generate"):
         """Trains model with generated data. Training stops if average error is below 0.01 and 2000 most recent sequences
         were processed correctly (absolute error < 0.04).
 
+        :param data_mode: indicator whether to generate data to train or use data from file
+        :param threshold: maximal absolute error for sequence to be processed correctly
         :param max_steps: maximum number of iterations
         """
         self.model.train()
@@ -89,7 +94,7 @@ class Adding(nn.Module):
                 self.writer.flush()
 
             abs_error = torch.abs(output - y).view(-1)
-            correct = (abs_error < 0.04).float()
+            correct = (abs_error < threshold).float()
             recent_errors.extend(abs_error.tolist())
             recent_correct.extend(correct.tolist())
 
@@ -101,7 +106,8 @@ class Adding(nn.Module):
                 n = min(1000, len(recent_errors))
                 avg = sum(recent_errors[-n:]) / n
                 corr = sum(recent_correct[-n:])
-                print(f"Step {step:6d} | " f"Loss {loss.item():.4f} | " f"AvgErr {avg:.4f} | " f"Correct {int(corr)}/{n}")
+                print(
+                    f"Step {step:6d} | " f"Loss {loss.item():.4f} | " f"AvgErr {avg:.4f} | " f"Correct {int(corr)}/{n}")
 
             if len(recent_correct) == window and sum(recent_correct) == window:
                 avg_recent_error = sum(recent_errors) / window
@@ -147,6 +153,7 @@ class Adding(nn.Module):
         print(f"Avg error: {avg_error:.4f}")
         print(f"Accuracy: {accuracy * 100:.2f}%")
 
+
 def choose_model(input_model: str):
     model = None
     if input_model == "LSTM":
@@ -157,11 +164,13 @@ def choose_model(input_model: str):
         model = LRU(in_features=2, out_features=ADDING_HIDDEN_SIZE, state_features=ADDING_HIDDEN_SIZE)
     return model
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, required=True, choices=["LSTM", "GRU", "LRU"])
     parser.add_argument("--data", type=str, required=True, choices=["generate", "file"])
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     args = parse_args()
@@ -170,9 +179,10 @@ if __name__ == '__main__':
 
         model = choose_model(args.model)
 
-        adding = Adding(model, sequence_length=ADDING_SEQUENCE_LENGTH, value_range=ADDING_RANGE, learning_rate=ADDING_LEARNING_RATE, writer=writer)
-        adding.train()
-        adding.evaluate_model(num_samples=ADDING_EVAL_SEQUENCES)
+        adding = Adding(model, sequence_length=ADDING_SEQUENCE_LENGTH, value_range=ADDING_RANGE,
+                        learning_rate=ADDING_LEARNING_RATE, alpha=ADDING_ALPHA, writer=writer)
+        adding.train(data_mode=args.data, threshold=ADDING_THRESHOLD)
+        adding.evaluate_model(num_samples=ADDING_EVAL_SEQUENCES, threshold=ADDING_THRESHOLD)
 
         print(f"Experiment {i} completed.")
         writer.close()

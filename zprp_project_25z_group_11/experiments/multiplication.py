@@ -92,7 +92,7 @@ class Multiplication(nn.Module):
             seq, target = self.generator.generate_multiplication()
 
             # to get data from file use:
-            # seq, target, start_line_number = self.generator.get_data(start_line_number)
+            # seq, target, start_line_number = self.generator.get_data(start_line_number, MULTIPLICATION_DATA_FILENAME)
 
             sequence = tensor(seq, dtype=float32).unsqueeze(0)
             targets = tensor([[target]], dtype=float32)
