@@ -3,14 +3,15 @@ import torch.nn as nn
 import torch.optim as optim
 from LRU_pytorch import LRU
 from torch.utils.tensorboard import SummaryWriter
+import argparse
 
 from zprp_project_25z_group_11.generators.components import Components
 from zprp_project_25z_group_11.config import (
-    ADDING_LOGS_DIR, ADDING_LR, ADDING_HIDDEN_SIZE)
+    ADDING_LOGS_DIR, ADDING_LEARNING_RATE, ADDING_HIDDEN_SIZE, ADDING_EVAL_SEQUENCES, ADDING_SEQUENCE_LENGTH, ADDING_RANGE, ADDING_DATA_FILENAME)
 
 
 class Adding(nn.Module):
-    def __init__(self, model: nn.Module, sequence_length: int = 100, value_range: tuple[float, float] = (-1.0, 1.0), learning_rate: float = 0.001, alpha : float = 0.9, writer: SummaryWriter | None = None,):
+    def __init__(self, model: nn.Module, sequence_length: int = 100, value_range: tuple[float, float] = (-1.0, 1.0), learning_rate: float = 1e-3, alpha : float = 0.9, writer: SummaryWriter | None = None,):
         """
         The implementation of the forth Hochreiter experiment.
         It tests whether models can solve long time lag problems involving distributed, continues-valued representations.
@@ -33,8 +34,7 @@ class Adding(nn.Module):
         self._init_lstm_forget_bias()
 
     def _init_lstm_forget_bias(self):
-        """
-        Initializes forget gates in LSTM model to ensure long-term memory
+        """Initializes forget gates in LSTM model to ensure long-term memory
         """
         if not isinstance(self.model, nn.LSTM):
             return
@@ -52,7 +52,7 @@ class Adding(nn.Module):
         last = out[:, -1, :]
         return self.head(last)
 
-    def train(self, max_steps=300000):
+    def train(self, max_steps=100000, data_mode="generate"):
         """Trains model with generated data. Training stops if average error is below 0.01 and 2000 most recent sequences
         were processed correctly (absolute error < 0.04).
 
@@ -63,11 +63,15 @@ class Adding(nn.Module):
         recent_errors = []
         recent_correct = []
         window = 2000
+        start_line_number = 0
 
         for step in range(1, max_steps + 1):
             self.global_step += 1
 
-            seq, target = self.generator.generate()
+            if data_mode == "generate":
+                seq, target = self.generator.generate_adding()
+            else:
+                seq, target, start_line_number = self.generator.get_data(start_line_number, ADDING_DATA_FILENAME)
 
             x = torch.tensor(seq, dtype=torch.float32).unsqueeze(0)
             y = torch.tensor([[target]], dtype=torch.float32)
@@ -119,7 +123,7 @@ class Adding(nn.Module):
 
         with torch.no_grad():
             for _ in range(num_samples):
-                seq, target = self.generator.generate()
+                seq, target = self.generator.generate_adding()
 
                 x = torch.tensor(seq, dtype=torch.float32).unsqueeze(0)
                 y = torch.tensor([[target]], dtype=torch.float32)
@@ -143,21 +147,32 @@ class Adding(nn.Module):
         print(f"Avg error: {avg_error:.4f}")
         print(f"Accuracy: {accuracy * 100:.2f}%")
 
-        self.model.train()
-        return avg_error, accuracy
+def choose_model(input_model: str):
+    model = None
+    if input_model == "LSTM":
+        model = nn.LSTM(input_size=2, hidden_size=ADDING_HIDDEN_SIZE, num_layers=1, batch_first=True)
+    elif input_model == "GRU":
+        model = nn.GRU(input_size=2, hidden_size=ADDING_HIDDEN_SIZE, num_layers=1, batch_first=True)
+    elif input_model == "LRU":
+        model = LRU(in_features=2, out_features=ADDING_HIDDEN_SIZE, state_features=ADDING_HIDDEN_SIZE)
+    return model
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", type=str, required=True, choices=["LSTM", "GRU", "LRU"])
+    parser.add_argument("--data", type=str, required=True, choices=["generate", "file"])
+    return parser.parse_args()
 
 if __name__ == '__main__':
+    args = parse_args()
     for i in range(10):
         writer = SummaryWriter(log_dir=ADDING_LOGS_DIR / f"exp_{i}")
 
-        # choose model
-        # model = LRU(in_features=2, out_features=1, state_features=ADDING_HIDDEN_SIZE)
-        model = nn.LSTM(input_size=2, hidden_size=ADDING_HIDDEN_SIZE, num_layers=1, batch_first=True)
-        # model = nn.GRU(input_size=2, hidden_size=ADDING_HIDDEN_SIZE, num_layers=1, batch_first=True)
+        model = choose_model(args.model)
 
-        adding = Adding(model, learning_rate=ADDING_LR, writer=writer)
+        adding = Adding(model, sequence_length=ADDING_SEQUENCE_LENGTH, value_range=ADDING_RANGE, learning_rate=ADDING_LEARNING_RATE, writer=writer)
         adding.train()
-        adding.evaluate_model()
+        adding.evaluate_model(num_samples=ADDING_EVAL_SEQUENCES)
 
         print(f"Experiment {i} completed.")
         writer.close()

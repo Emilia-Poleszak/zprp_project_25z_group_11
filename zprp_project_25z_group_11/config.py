@@ -25,14 +25,25 @@ ADDING_LOGS_DIR = LOGS_DIR / "adding"
 
 # Files
 RAW_REBER_DATA_FILENAME = 'reber.txt'
+ADDING_DATA_FILENAME = 'adding.txt'
+MULTIPLICATION_DATA_FILENAME = 'multiplication.txt'
 
 # Datasets parameters
 REBER_SAMPLES = 10000
 MULTIPLICATION_SEQUENCES = 2560
+ADDING_EVAL_SEQUENCES = 2560
 
 # Adding experiment parameters
-ADDING_LR = 1e-3
+ADDING_LEARNING_RATE = 1e-3
 ADDING_HIDDEN_SIZE = 64
+ADDING_SEQUENCE_LENGTH = 100
+ADDING_RANGE = (-1, 1)
+
+# Multiplication experiment parameters
+MULTIPLICATION_LEARNING_RATE = 0.001
+MULTIPLICATION_HIDDEN_SIZE = 64
+MULTIPLICATION_SEQUENCE_LENGTH = 100
+MULTIPLICATION_RANGE = (0, 1)
 
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
