@@ -12,14 +12,15 @@ from zprp_project_25z_group_11.config import (MULTIPLICATION_LOGS_DIR,
                                               MULTIPLICATION_SEQUENCE_LENGTH,
                                               MULTIPLICATION_DATA_FILENAME)
 
+
 class Multiplication(nn.Module):
     def __init__(self,
-             model: nn.Module,
-             writer: SummaryWriter,
-             lr: float = MULTIPLICATION_LEARNING_RATE,
-             sequence_length: int = MULTIPLICATION_SEQUENCE_LENGTH,
-             value_range: tuple[float, float] = (0, 1.0),
-             alpha: float = 0.9):
+                 model: nn.Module,
+                 writer: SummaryWriter,
+                 lr: float = MULTIPLICATION_LEARNING_RATE,
+                 sequence_length: int = MULTIPLICATION_SEQUENCE_LENGTH,
+                 value_range: tuple[float, float] = (0, 1.0),
+                 alpha: float = 0.9):
         """
         Implementation of multiplication experiment.
 
@@ -42,7 +43,6 @@ class Multiplication(nn.Module):
         self.writer = writer
         self.global_step = 0
         self._init_lstm_forget_bias()
-
 
     def _init_lstm_forget_bias(self):
         """

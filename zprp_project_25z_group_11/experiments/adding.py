@@ -10,7 +10,8 @@ from zprp_project_25z_group_11.config import (
 
 
 class Adding(nn.Module):
-    def __init__(self, model: nn.Module, sequence_length: int = 100, value_range: tuple[float, float] = (-1.0, 1.0), learning_rate: float = 0.001, alpha : float = 0.9, writer: SummaryWriter | None = None,):
+    def __init__(self, model: nn.Module, sequence_length: int = 100, value_range: tuple[float, float] = (-1.0, 1.0),
+                 learning_rate: float = 0.001, alpha: float = 0.9, writer: SummaryWriter | None = None, ):
         """
         The implementation of the forth Hochreiter experiment.
         It tests whether models can solve long time lag problems involving distributed, continues-valued representations.
@@ -25,7 +26,8 @@ class Adding(nn.Module):
 
         self.model = model
         self.head = nn.Linear(model.hidden_size if hasattr(model, "hidden_size") else model.out_features, 1)
-        self.optimizer = optim.RMSprop(list(self.model.parameters()) + list(self.head.parameters()), lr=learning_rate, alpha=alpha)
+        self.optimizer = optim.RMSprop(list(self.model.parameters()) + list(self.head.parameters()), lr=learning_rate,
+                                       alpha=alpha)
         self.loss_fn = nn.MSELoss()
         self.generator = Components(length=sequence_length, value_range=value_range)
         self.writer = writer
@@ -97,7 +99,8 @@ class Adding(nn.Module):
                 n = min(1000, len(recent_errors))
                 avg = sum(recent_errors[-n:]) / n
                 corr = sum(recent_correct[-n:])
-                print(f"Step {step:6d} | " f"Loss {loss.item():.4f} | " f"AvgErr {avg:.4f} | " f"Correct {int(corr)}/{n}")
+                print(
+                    f"Step {step:6d} | " f"Loss {loss.item():.4f} | " f"AvgErr {avg:.4f} | " f"Correct {int(corr)}/{n}")
 
             if len(recent_correct) == window and sum(recent_correct) == window:
                 avg_recent_error = sum(recent_errors) / window
@@ -145,6 +148,7 @@ class Adding(nn.Module):
 
         self.model.train()
         return avg_error, accuracy
+
 
 if __name__ == '__main__':
     for i in range(10):

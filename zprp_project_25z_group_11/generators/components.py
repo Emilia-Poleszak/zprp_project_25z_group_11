@@ -14,7 +14,7 @@ class Components:
         self.low, self.high = value_range
 
 
-    def generate_adding(self) -> tuple[list[tuple[float, float]], float]:
+    def generate(self) -> tuple[list[tuple[float, float]], float]:
         """Generate one sequence for adding experiment
 
         :return: list of components and target value
