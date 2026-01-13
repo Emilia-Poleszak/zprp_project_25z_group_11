@@ -26,6 +26,8 @@ py .\zprp_project_25z_group_11\generators\components.py --task TASK_NAME --num_s
 
 `--num_sequences`: Number of sequences to generate (integer)</br>
 
+`--rng`: Random RNG (integer)
+
 ## Experiments
 
 ### Adding experiment
@@ -42,6 +44,41 @@ python .\zprp_project_25z_group_11\experiments\adding.py --model MODEL_NAME --da
 `--data`: Data source</br>
 * `generate` generate new sequences while learning</br>
 * `file`     load sequences from file
+
+`--rng`: Random RNG (integer)
+
+### Multiplication experiment
+#### Usage
+```bash
+python .\zprp_project_25z_group_11\experiments\multiplication.py --model MODEL_NAME --data DATA_MODE
+```
+#### Arguments:
+`--model`: Model to use</br>
+* `LSTM` PyTorch implementation of long short-term memory (LSTM) RNN </br>
+* `GRU`  PyTorch implementation of gated recurrent unit (GRU) RNN </br>
+* `LRU`  Gothos/LRU-pytorch implementation of Linear Recurrent Units (LRU)
+
+`--data`: Data source</br>
+* `generate` generate new sequences while learning</br>
+* `file`     load sequences from file
+
+`--rng`: Random RNG (integer)
+
+## Tests
+
+### Usage
+
+Adding:
+
+```bash
+pytest .\tests\components_adding.py
+````
+
+Multiplication:
+
+```bash
+pytest .\tests\components_multiplication.py 
+```
 
 ## Project Organization
 
