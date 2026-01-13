@@ -1,12 +1,13 @@
 import random
 
-from zprp_project_25z_group_11.config import RAW_DATA_DIR, ADDING_DATA_FILENAME, ADDING_SEQUENCES, MULTIPLICATION_DATA_FILENAME, MULTIPLICATION_SEQUENCES
+from zprp_project_25z_group_11.config import RAW_DATA_DIR
 
 class Components:
+
     def __init__(self, length: int, value_range: tuple[float, float]):
         """Data generator for adding and multiplication experiment
 
-        :param length: minimal number of samples in sequence
+        :param length: number of samples in sequence
         :param value_range: value range for first component of element in sequence
         """
         self.length = length
@@ -18,26 +19,26 @@ class Components:
 
         :return: list of components and target value
         """
-        length = random.randint(self.length, int(self.length + self.length / 10))
+        first = [random.uniform(self.low, self.high) for _ in range(self.length)]
+        second = [0.0] * self.length
 
-        first = [random.uniform(self.low, self.high) for _ in range(length)]
-        second = [0.0] * length
-
-        marked_one_idx = random.randint(0, min(9, length - 1))
-        possible_indices = [i for i in range(length // 2 - 1) if i != marked_one_idx]
-        marked_two_idx = random.choice(possible_indices) if possible_indices else marked_one_idx
-
+        marked_one_idx = random.randint(0, min(9, self.length - 1))
         second[marked_one_idx] = 1.0
-        second[marked_two_idx] = 1.0
+        x1 = first[marked_one_idx]
 
-        if marked_one_idx == 0:
-            first[0] = 0.0
-        else:
-            second[0] = -1.0
+        possible_indices = [i for i in range(self.length) if i != marked_one_idx]
+        marked_two_idx = random.choice(possible_indices[:self.length // 2 - 1])
+        second[marked_two_idx] = 1.0
+        x2 = first[marked_two_idx]
+
+        if x1 == first[0]:
+            x1 = 0.0
+        elif x2 == first[0]:
+            x2 = 0.0
+
+        second[0] = -1.0
         second[-1] = -1.0
 
-        x1 = first[marked_one_idx]
-        x2 = first[marked_two_idx]
         target = 0.5 + (x1 + x2) / 4.0
 
         return list(zip(first, second)), target
