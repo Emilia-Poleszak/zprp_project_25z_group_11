@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 from LRU_pytorch import LRU
 from torch.utils.tensorboard import SummaryWriter
+import argparse
+import random
 
 from zprp_project_25z_group_11.generators.components import Components
 from zprp_project_25z_group_11.config import (MULTIPLICATION_LOGS_DIR,
@@ -10,17 +12,21 @@ from zprp_project_25z_group_11.config import (MULTIPLICATION_LOGS_DIR,
                                               MULTIPLICATION_LEARNING_RATE,
                                               MULTIPLICATION_SEQUENCES,
                                               MULTIPLICATION_SEQUENCE_LENGTH,
-                                              MULTIPLICATION_DATA_FILENAME)
+                                              MULTIPLICATION_DATA_FILENAME,
+                                              MULTIPLICATION_ALPHA,
+                                              MULTIPLICATION_RANGE,
+                                              MULTIPLICATION_THRESHOLD)
 
 
 class Multiplication(nn.Module):
     def __init__(self,
                  model: nn.Module,
                  writer: SummaryWriter,
+                 rng: random.Random,
                  lr: float = MULTIPLICATION_LEARNING_RATE,
                  sequence_length: int = MULTIPLICATION_SEQUENCE_LENGTH,
-                 value_range: tuple[float, float] = (0, 1.0),
-                 alpha: float = 0.9):
+                 value_range: tuple[float, float] = MULTIPLICATION_RANGE,
+                 alpha: float = MULTIPLICATION_ALPHA):
         """
         Implementation of multiplication experiment.
 
@@ -39,7 +45,8 @@ class Multiplication(nn.Module):
                                        alpha=alpha)
         self.criterion = nn.MSELoss()
         self.generator = Components(length=sequence_length,
-                                    value_range=value_range)
+                                    value_range=value_range,
+                                    rng=rng)
         self.writer = writer
         self.global_step = 0
         self._init_lstm_forget_bias()
@@ -70,9 +77,10 @@ class Multiplication(nn.Module):
 
     def train_loop(self,
                    max_steps=300000,
-                   threshold=0.04,
+                   threshold=MULTIPLICATION_THRESHOLD,
                    n=2000,
-                   max_errors=13):
+                   max_errors=13,
+                   data_mode="generate"):
         """
         Trains model with generated data, with possible switch to
         getting data from .txt file (commented line 95).
@@ -88,11 +96,10 @@ class Multiplication(nn.Module):
         for step in range(1, max_steps + 1):
             self.global_step += 1
 
-            # to generate new data use:
-            seq, target = self.generator.generate_multiplication()
-
-            # to get data from file use:
-            # seq, target, start_line_number = self.generator.get_data(start_line_number, MULTIPLICATION_DATA_FILENAME)
+            if data_mode == "generate":
+                seq, target = self.generator.generate_multiplication()
+            else:
+                seq, target, start_line_number = self.generator.get_data(start_line_number, MULTIPLICATION_DATA_FILENAME)
 
             sequence = tensor(seq, dtype=float32).unsqueeze(0)
             targets = tensor([[target]], dtype=float32)
@@ -128,7 +135,7 @@ class Multiplication(nn.Module):
 
     def evaluate(self,
                  num_samples=MULTIPLICATION_SEQUENCES,
-                 threshold=0.04):
+                 threshold=MULTIPLICATION_THRESHOLD):
         """
         Evaluates model in 2560 iterations.
         Absolute error threshold is 0.04.
@@ -160,28 +167,32 @@ class Multiplication(nn.Module):
 
         print(f"Accuracy: {accuracy:.2f}%, average error: {avg_error:.4f}")
 
+def choose_model(input_model: str):
+    model = None
+    if input_model == "LSTM":
+        model = nn.LSTM(input_size=2, hidden_size=MULTIPLICATION_HIDDEN_SIZE, num_layers=1, batch_first=True)
+    elif input_model == "GRU":
+        model = nn.GRU(input_size=2, hidden_size=MULTIPLICATION_HIDDEN_SIZE, num_layers=1, batch_first=True)
+    elif input_model == "LRU":
+        model = LRU(in_features=2, out_features=MULTIPLICATION_HIDDEN_SIZE, state_features=MULTIPLICATION_HIDDEN_SIZE)
+    return model
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", type=str, required=True, choices=["LSTM", "GRU", "LRU"])
+    parser.add_argument("--data", type=str, required=True, choices=["generate", "file"])
+    parser.add_argument("--rng", type=random.Random, required=True)
+    return parser.parse_args()
 
 if __name__ == '__main__':
+    args = parse_args()
     for i in range(10):
         writer = SummaryWriter(log_dir=MULTIPLICATION_LOGS_DIR / f"exp_{i}")
+        model = choose_model(input_model=args.model)
 
-        # choose one model for experiment:
-        model = nn.LSTM(input_size=2,
-                        hidden_size=MULTIPLICATION_HIDDEN_SIZE,
-                        num_layers=1,
-                        batch_first=True)
-
-        # model = LRU(in_features=2,
-        #             out_features=1,
-        #             state_features=MULTIPLICATION_HIDDEN_SIZE)
-
-        # model = nn.GRU(input_size=2,
-        #                hidden_size=MULTIPLICATION_HIDDEN_SIZE,
-        #                num_layers=1,
-        #                batch_first=True)
-
-        multiplication = Multiplication(model, writer)
-        multiplication.train_loop()
+        multiplication = Multiplication(model, writer, args.rng)
+        multiplication.train_loop(data_mode=args.data)
         multiplication.evaluate()
 
         print(f"Experiment {i} completed.")
