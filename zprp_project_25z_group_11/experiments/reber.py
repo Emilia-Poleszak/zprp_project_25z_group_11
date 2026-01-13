@@ -1,8 +1,13 @@
 import random
+import sys
+import time
+from datetime import datetime
+
 import numpy as np
 import torch
 
 import torch.nn as nn
+from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
@@ -168,6 +173,7 @@ class ReberExperiment:
         :param summary_writer: writer for loss and score documentation
         """
         epoch = 0
+        stop_condition = []
         while True:
             epoch += 1
 
@@ -180,6 +186,12 @@ class ReberExperiment:
 
             if score == 1:
                 break
+            elif score > 0.95:
+                stop_condition.append(epoch)
+                if len(stop_condition) >= 10:
+                    break
+            else:
+                stop_condition.clear()
         summary_writer.flush()
 
     @staticmethod
@@ -195,19 +207,44 @@ class ReberExperiment:
             encoded[i][mapping[char]] = 1
         return torch.tensor(encoded)
 
+def single_test(model_name: str, timestamp: datetime, /, *, filename: str = 'single_test'):
+    if  model_name == 'LRU':
+        model = LRU(in_features=7, out_features=7, state_features=REBER_HIDDEN_SIZE)
+    elif model_name == 'LSTM':
+        model = nn.LSTM(input_size=7, hidden_size=REBER_HIDDEN_SIZE, num_layers=1, batch_first=True)
+    elif model_name == 'GRU':
+        model = nn.GRU(input_size=7, hidden_size=REBER_HIDDEN_SIZE, num_layers=1, batch_first=True)
+    else:
+        raise ValueError('Invalid model name')
+    ts = timestamp.strftime("%Y%m%d_%H%M%S")
+
+    writer = SummaryWriter(log_dir=REBER_LOGS_DIR / model_name / ts / filename)
+
+    reber = ReberExperiment(model, learning_rate=REBER_LEARNING_RATE)
+    reber.setup()
+    reber.run(writer)
+
+    writer.close()
 
 if __name__ == '__main__':
-    for i in range(30):
-        writer = SummaryWriter(log_dir=REBER_LOGS_DIR / f"exp_{i}")
+    # wait for log print
+    time.sleep(0.1)
+    sys.stderr.flush()
+    sys.stdout.flush()
 
-        # choose model
-        model = LRU(in_features=7, out_features=7, state_features=REBER_HIDDEN_SIZE)
-        # model = nn.LSTM(input_size=7, hidden_size=REBER_HIDDEN_SIZE, num_layers=1, batch_first=True)
-        # model = nn.GRU(input_size=7, hidden_size=REBER_HIDDEN_SIZE, num_layers=1, batch_first=True)
+    print("\nRunning Embedded Reber Grammar experiment.")
+    model = input(' - Choose model (LRU / LSTM / GRU):')
+    no_tests = input(" - Input number of experiments: ")
+    while not no_tests.isdigit():
+        no_tests = input("Wrong input.\nInput number of experiments: ")
+    no_tests = int(no_tests)
 
-        reber = ReberExperiment(model, learning_rate=REBER_LEARNING_RATE)
-        reber.setup()
-        reber.run(writer)
-
-        print(f"Experiment {i} completed.")
-        writer.close()
+    timestamp = datetime.now()
+    try:
+        for i in range(int(no_tests)):
+            single_test(model, timestamp, filename=f"experiment_{i}")
+            print(f"Experiment {i} completed.")
+    except Exception as e:
+        print("Error detected:", e)
+    except KeyboardInterrupt:
+        print("\nProgram interrupted.")
