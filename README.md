@@ -32,10 +32,16 @@ py .\zprp_project_25z_group_11\generators\components.py --task TASK_NAME --num_s
 
 ### Reber experiment
 #### Usage
-
 ```bash
-py .\zprp_project_25z_group_11\experiments\reber.py
+py .\zprp_project_25z_group_11\experiments\reber.py --model MODEL_NAME --num-tests NUMBER_OF_TESTS
 ```
+#### Arguments:
+`--model`: Model to use
+* `LSTM` PyTorch implementation of long short-term memory (LSTM) RNN 
+* `GRU`  PyTorch implementation of gated recurrent unit (GRU) RNN
+* `LRU`  Gothos/LRU-pytorch implementation of Linear Recurrent Units (LRU)
+
+`--num-tests`: Number of tests to run (default value - 1)
 
 ### Adding experiment
 #### Usage

@@ -1,3 +1,4 @@
+import argparse
 import random
 import sys
 import time
@@ -226,23 +227,18 @@ def single_test(model_name: str, timestamp: datetime, /, *, filename: str = 'sin
 
     writer.close()
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", type=str, required=True, choices=["LSTM", "GRU", "LRU"])
+    parser.add_argument("--num-tests", type=int, required=False, default=1)
+    return parser.parse_args()
+
 if __name__ == '__main__':
-    # wait for log print
-    time.sleep(0.1)
-    sys.stderr.flush()
-    sys.stdout.flush()
-
-    print("\nRunning Embedded Reber Grammar experiment.")
-    model = input(' - Choose model (LRU / LSTM / GRU):')
-    no_tests = input(" - Input number of experiments: ")
-    while not no_tests.isdigit():
-        no_tests = input("Wrong input.\nInput number of experiments: ")
-    no_tests = int(no_tests)
-
+    args = parse_args()
     timestamp = datetime.now()
     try:
-        for i in range(int(no_tests)):
-            single_test(model, timestamp, filename=f"experiment_{i}")
+        for i in range(int(args.num_tests)):
+            single_test(args.model, timestamp, filename=f"experiment_{i}")
             print(f"Experiment {i} completed.")
     except Exception as e:
         print("Error detected:", e)
