@@ -27,7 +27,6 @@
   - Working on implementing LRU model in all experiment
 - **Week 8:**
   - Working on implementing LRU model in all experiment
-  - 
 - **Week 9:**
   - Implementing Multiplication experiment
   - First results from Multiplication experiment
@@ -42,7 +41,10 @@
   - Optimizing Adding experiment implementation
   - Optimizing Multiplication experiment implementation
 - **Week 13:**
-  -
+  - Write project report
+  - Add tests
+  - Merge all project
+  - Update documentation and README
 
 Comments:
 - Implementing experiments got postponed by one week 
