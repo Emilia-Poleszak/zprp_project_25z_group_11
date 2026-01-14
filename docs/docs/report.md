@@ -178,8 +178,8 @@ Table 1 presents average results of 10 trainings.
 
 | Model | # wrong predictions | Success after |
 |:------|:-------------------:|--------------:|
-| LSTM  |                     |               |  
-| GRU   |                     |               |  
+| LSTM  |     22.7 / 2560     |     185 969.0 |  
+| GRU   |     14.4 / 2560     |     136 112.6 |  
 
 *Table 3. Results of training LSTM and GRU models.*
 
