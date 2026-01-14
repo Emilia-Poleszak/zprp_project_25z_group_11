@@ -21,7 +21,7 @@ Mean results of 30 trials executed for each model with described parameters are 
 | LSTM  | 0.2           | 64          | 100%         | 1.0000                                | 14.70                 |
 | GRU   | 0.2           | 64          | 100%         | 1.0000                                | 13.67                 |
 | LRU   | 0.2           | 64          | 3.3%         | 0.9833                                | 50.79                 |
-Table 1.1 - Mean effectiveness metrics for each described model with its parameters
+*Table 1.1 - Mean effectiveness metrics for each described model with its parameters.*
 
 Graphs 1.1, 1.2, and 1.3 present the condition score and loss over epochs from single example tests for the LSTM, GRU, and LRU models, respectively.
 
@@ -69,7 +69,7 @@ Graphs 1.1, 1.2, and 1.3 present the condition score and loss over epochs from s
     </div>
 </div>
 <p style="text-align: center">
-<em>Graph 1.3. (a) Condition score and (b) training loss over epochs of LRU experiment<em>
+<em>Graph 1.3. (a) Condition score and (b) training loss over epochs of LRU experiment</em>
 </p>
 
 ------------------
@@ -120,7 +120,7 @@ example trials for each model.
 
 Below are presented average results from 10 trials.
 
-*Table 2.1 Adding experiment results for GRU and LSTM.*
+*Table 2 Adding experiment results for GRU and LSTM.*
 
 | Model | # wrong predictions | Success after |
 |:------|:-------------------:|--------------:|
@@ -178,25 +178,26 @@ Table 1 presents average results of 10 trainings.
 
 | Model | # wrong predictions | Success after |
 |:------|:-------------------:|--------------:|
-| LSTM  |                     |               |  |
-| GRU   |                     |               |  |
+| LSTM  |                     |               |  
+| GRU   |                     |               |  
 
 *Table 3. Results of training LSTM and GRU models.*
 
-For LRU model we have to run this test which takes ~3h.
-Results will be today :)
+LRU model did not meet the necessary conditions to finish training.
+After 150 000 training iterations prediction accuracy was ~15% - 
+similar results as in Adding problem. 
 
 During each training MSE error was saved in a Tensorboard. 
-Graphs 1-3 shows examples of training, one for each model.
-
-<img src="../../reports/figures/Train_MSE_M_LSTM.svg" alt="isolated"/>
+Graphs 3.1-3 shows examples of training, one for each model.
 
 *Graph 3.1. Example of MSE error while training LSTM model.*
 
-<img src="../../reports/figures/Train_MSE_M_LRU.svg" alt="isolated"/>
+<img src="../../reports/figures/Train_MSE_M_LSTM.svg" alt="isolated"/>
 
 *Graph 3.2. Example of MSE error while training LRU model.*
 
-<img src="../../reports/figures/Train_MSE_M_GRU.svg" alt="isolated"/>
+<img src="../../reports/figures/Train_MSE_M_LRU.svg" alt="isolated"/>
 
 *Graph 3.3. Example of MSE error while training GRU model.*
+
+<img src="../../reports/figures/Train_MSE_M_GRU.svg" alt="isolated"/>
