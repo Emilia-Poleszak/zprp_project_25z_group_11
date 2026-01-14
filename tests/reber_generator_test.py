@@ -4,9 +4,11 @@ import pytest
 
 from zprp_project_25z_group_11.generators.reber import EmbeddedReberGrammar
 
+
 @pytest.fixture
 def generator():
     return EmbeddedReberGrammar()
+
 
 def test_generator_grammar_structure(generator):
     minimum_length = 6
@@ -41,6 +43,7 @@ def test_generator_grammar_structure(generator):
             current_state = next_state
 
         assert valid_path
+
 
 def test_save_creates_file(generator):
     num_samples = 10

@@ -31,7 +31,8 @@ ADDING_DATA_FILENAME = 'adding.txt'
 MULTIPLICATION_DATA_FILENAME = 'multiplication.txt'
 
 # Datasets parameters
-REBER_SAMPLES = 512 # This value is mentioned in original Hochreiter experiment (train + test set)
+# This value is mentioned in original Hochreiter experiment (train + test set)
+REBER_SAMPLES = 512
 ADDING_SEQUENCES = 2560
 MULTIPLICATION_SEQUENCES = 2560
 ADDING_EVAL_SEQUENCES = 2560

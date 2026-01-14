@@ -7,13 +7,13 @@ class EmbeddedReberGrammar:
     def __init__(self):
         """ Data generator for embedded Reber Grammar experiment.
         """
-        self.grammar = { 0: [('B', 1)],
-                         1: [('T', 2), ('P', 3)],
-                         2: [('S', 2), ('X', 4)],
-                         3: [('T', 3), ('V', 5)],
-                         4: [('X', 3), ('S', 6)],
-                         5: [('P', 4), ('V', 6)],
-                         6: [('E', 7)]}
+        self.grammar = {0: [('B', 1)],
+                        1: [('T', 2), ('P', 3)],
+                        2: [('S', 2), ('X', 4)],
+                        3: [('T', 3), ('V', 5)],
+                        4: [('X', 3), ('S', 6)],
+                        5: [('P', 4), ('V', 6)],
+                        6: [('E', 7)]}
         pass
 
     def save(self, no_samples: int):

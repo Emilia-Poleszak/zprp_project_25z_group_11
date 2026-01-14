@@ -22,15 +22,18 @@ class Components:
 
         :return: list of components and target value
         """
-        first = [self.rng.uniform(self.low, self.high) for _ in range(self.length)]
+        first = [self.rng.uniform(self.low, self.high)
+                 for _ in range(self.length)]
         second = [0.0] * self.length
 
         marked_one_idx = self.rng.randint(0, min(9, self.length - 1))
         second[marked_one_idx] = 1.0
         x1 = first[marked_one_idx]
 
-        possible_indices = [i for i in range(self.length) if i != marked_one_idx]
-        marked_two_idx = self.rng.choice(possible_indices[:self.length // 2 - 1])
+        possible_indices = [i for i in range(
+            self.length) if i != marked_one_idx]
+        marked_two_idx = self.rng.choice(
+            possible_indices[:self.length // 2 - 1])
         second[marked_two_idx] = 1.0
         x2 = first[marked_two_idx]
 
@@ -51,15 +54,18 @@ class Components:
 
         :return: list of components and target value
         """
-        first = [self.rng.uniform(self.low, self.high) for _ in range(self.length)]
+        first = [self.rng.uniform(self.low, self.high)
+                 for _ in range(self.length)]
         second = [0.0] * self.length
 
         second[0] = -1.0
         second[-1] = -1.0
 
         marked_one_idx = self.rng.randint(0, min(9, self.length - 1))
-        possible_indices = [i for i in range(self.length // 2 - 1) if i != marked_one_idx]
-        marked_two_idx = self.rng.choice(possible_indices) if possible_indices else marked_one_idx
+        possible_indices = [i for i in range(
+            self.length // 2 - 1) if i != marked_one_idx]
+        marked_two_idx = self.rng.choice(
+            possible_indices) if possible_indices else marked_one_idx
 
         if marked_one_idx == 0:
             x1 = 1.0
@@ -123,7 +129,8 @@ class Components:
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--task", type=str, required=True, choices=["adding", "multiplication"])
+    parser.add_argument("--task", type=str, required=True,
+                        choices=["adding", "multiplication"])
     parser.add_argument("--num_sequences", type=int, required=True)
     parser.add_argument("--rng", type=random.Random, required=True)
     return parser.parse_args()
@@ -133,9 +140,11 @@ if __name__ == '__main__':
     args = parse_args()
 
     if args.task == "adding":
-        gen = Components(length=ADDING_SEQUENCE_LENGTH, value_range=ADDING_RANGE, rng=args.rng)
+        gen = Components(length=ADDING_SEQUENCE_LENGTH,
+                         value_range=ADDING_RANGE, rng=args.rng)
         gen.save(args.num_sequences, ADDING_DATA_FILENAME)
 
     elif args.task == "multiplication":
-        gen = Components(length=MULTIPLICATION_SEQUENCE_LENGTH, value_range=MULTIPLICATION_RANGE, rng=args.rng)
+        gen = Components(length=MULTIPLICATION_SEQUENCE_LENGTH,
+                         value_range=MULTIPLICATION_RANGE, rng=args.rng)
         gen.save(args.num_sequences, MULTIPLICATION_DATA_FILENAME)

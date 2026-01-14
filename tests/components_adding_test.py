@@ -59,5 +59,3 @@ def test_not_constant():
     assert not values1 == values2
     assert not markers1 == markers2
     assert not t1 == t2
-
-

@@ -39,7 +39,8 @@ class Multiplication(nn.Module):
         super().__init__()
 
         self.model = model
-        self.head = nn.Linear(model.hidden_size if hasattr(model, "hidden_size") else model.out_features, 1)
+        self.head = nn.Linear(model.hidden_size if hasattr(
+            model, "hidden_size") else model.out_features, 1)
         self.optimizer = optim.RMSprop(list(self.model.parameters()) + list(self.head.parameters()),
                                        lr=lr,
                                        alpha=alpha)
@@ -110,7 +111,8 @@ class Multiplication(nn.Module):
             loss = self.criterion(output, targets)
             loss.backward()
 
-            torch.nn.utils.clip_grad_norm_(list(self.model.parameters()) + list(self.head.parameters()), 1.0)
+            torch.nn.utils.clip_grad_norm_(
+                list(self.model.parameters()) + list(self.head.parameters()), 1.0)
             self.optimizer.step()
 
             self.writer.add_scalar("Train/MSE", loss.item(), self.global_step)
@@ -128,7 +130,8 @@ class Multiplication(nn.Module):
             if step % n == 0:
                 avg_error = sum(errors[-n:]) / n
                 c = int(sum(correct[-n:]))
-                print(f"Step: {step} | Correct: {c}/2000 | Average error: {avg_error:.4f}")
+                print(
+                    f"Step: {step} | Correct: {c}/2000 | Average error: {avg_error:.4f}")
 
             if len(correct) == n and sum(correct) > n - max_errors:
                 print(f"\nTraining finished at step {step}")
@@ -172,18 +175,23 @@ class Multiplication(nn.Module):
 def choose_model(input_model: str):
     model = None
     if input_model == "LSTM":
-        model = nn.LSTM(input_size=2, hidden_size=MULTIPLICATION_HIDDEN_SIZE, num_layers=1, batch_first=True)
+        model = nn.LSTM(
+            input_size=2, hidden_size=MULTIPLICATION_HIDDEN_SIZE, num_layers=1, batch_first=True)
     elif input_model == "GRU":
-        model = nn.GRU(input_size=2, hidden_size=MULTIPLICATION_HIDDEN_SIZE, num_layers=1, batch_first=True)
+        model = nn.GRU(input_size=2, hidden_size=MULTIPLICATION_HIDDEN_SIZE,
+                       num_layers=1, batch_first=True)
     elif input_model == "LRU":
-        model = LRU(in_features=2, out_features=MULTIPLICATION_HIDDEN_SIZE, state_features=MULTIPLICATION_HIDDEN_SIZE)
+        model = LRU(in_features=2, out_features=MULTIPLICATION_HIDDEN_SIZE,
+                    state_features=MULTIPLICATION_HIDDEN_SIZE)
     return model
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, required=True, choices=["LSTM", "GRU", "LRU"])
-    parser.add_argument("--data", type=str, required=True, choices=["generate", "file"])
+    parser.add_argument("--model", type=str, required=True,
+                        choices=["LSTM", "GRU", "LRU"])
+    parser.add_argument("--data", type=str, required=True,
+                        choices=["generate", "file"])
     parser.add_argument("--rng", type=random.Random, required=True)
     return parser.parse_args()
 
@@ -191,7 +199,8 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     try:
-        writer = SummaryWriter(log_dir=MULTIPLICATION_LOGS_DIR / f"exp_multiplication")
+        writer = SummaryWriter(
+            log_dir=MULTIPLICATION_LOGS_DIR / f"exp_multiplication")
         model = choose_model(input_model=args.model)
 
         multiplication = Multiplication(model, writer, args.rng)

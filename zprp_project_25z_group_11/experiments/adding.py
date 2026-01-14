@@ -29,11 +29,13 @@ class Adding(nn.Module):
         super().__init__()
 
         self.model = model
-        self.head = nn.Linear(model.hidden_size if hasattr(model, "hidden_size") else model.out_features, 1)
+        self.head = nn.Linear(model.hidden_size if hasattr(
+            model, "hidden_size") else model.out_features, 1)
         self.optimizer = optim.RMSprop(list(self.model.parameters()) + list(self.head.parameters()), lr=learning_rate,
                                        alpha=alpha)
         self.loss_fn = nn.MSELoss()
-        self.generator = Components(length=sequence_length, value_range=value_range, rng=rng)
+        self.generator = Components(
+            length=sequence_length, value_range=value_range, rng=rng)
         self.writer = writer
         self.global_step = 0
         self._init_lstm_forget_bias()
@@ -78,7 +80,8 @@ class Adding(nn.Module):
             if data_mode == "generate":
                 seq, target = self.generator.generate_adding()
             else:
-                seq, target, start_line_number = self.generator.get_data(start_line_number, ADDING_DATA_FILENAME)
+                seq, target, start_line_number = self.generator.get_data(
+                    start_line_number, ADDING_DATA_FILENAME)
 
             x = torch.tensor(seq, dtype=torch.float32).unsqueeze(0)
             y = torch.tensor([[target]], dtype=torch.float32)
@@ -88,11 +91,13 @@ class Adding(nn.Module):
             loss = self.loss_fn(output, y)
 
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(list(self.model.parameters()) + list(self.head.parameters()), 1.0)
+            torch.nn.utils.clip_grad_norm_(
+                list(self.model.parameters()) + list(self.head.parameters()), 1.0)
             self.optimizer.step()
 
             if self.writer is not None:
-                self.writer.add_scalar("Train/MSE", loss.item(), self.global_step)
+                self.writer.add_scalar(
+                    "Train/MSE", loss.item(), self.global_step)
                 self.writer.flush()
 
             abs_error = torch.abs(output - y).view(-1)
@@ -147,7 +152,8 @@ class Adding(nn.Module):
         accuracy = correct / num_samples
 
         if self.writer is not None:
-            self.writer.add_scalar("Eval/avg_error", avg_error, self.global_step)
+            self.writer.add_scalar(
+                "Eval/avg_error", avg_error, self.global_step)
             self.writer.add_scalar("Eval/accuracy", accuracy, self.global_step)
             self.writer.flush()
 
@@ -159,18 +165,23 @@ class Adding(nn.Module):
 def choose_model(input_model: str):
     model = None
     if input_model == "LSTM":
-        model = nn.LSTM(input_size=2, hidden_size=ADDING_HIDDEN_SIZE, num_layers=1, batch_first=True)
+        model = nn.LSTM(input_size=2, hidden_size=ADDING_HIDDEN_SIZE,
+                        num_layers=1, batch_first=True)
     elif input_model == "GRU":
-        model = nn.GRU(input_size=2, hidden_size=ADDING_HIDDEN_SIZE, num_layers=1, batch_first=True)
+        model = nn.GRU(input_size=2, hidden_size=ADDING_HIDDEN_SIZE,
+                       num_layers=1, batch_first=True)
     elif input_model == "LRU":
-        model = LRU(in_features=2, out_features=ADDING_HIDDEN_SIZE, state_features=ADDING_HIDDEN_SIZE)
+        model = LRU(in_features=2, out_features=ADDING_HIDDEN_SIZE,
+                    state_features=ADDING_HIDDEN_SIZE)
     return model
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, required=True, choices=["LSTM", "GRU", "LRU"])
-    parser.add_argument("--data", type=str, required=True, choices=["generate", "file"])
+    parser.add_argument("--model", type=str, required=True,
+                        choices=["LSTM", "GRU", "LRU"])
+    parser.add_argument("--data", type=str, required=True,
+                        choices=["generate", "file"])
     parser.add_argument("--rng", type=random.Random, required=True)
     return parser.parse_args()
 
@@ -185,7 +196,8 @@ if __name__ == '__main__':
         adding = Adding(model, args.rng, sequence_length=ADDING_SEQUENCE_LENGTH, value_range=ADDING_RANGE,
                         learning_rate=ADDING_LEARNING_RATE, alpha=ADDING_ALPHA, writer=writer)
         adding.train(data_mode=args.data, threshold=ADDING_THRESHOLD)
-        adding.evaluate_model(num_samples=ADDING_EVAL_SEQUENCES, threshold=ADDING_THRESHOLD)
+        adding.evaluate_model(
+            num_samples=ADDING_EVAL_SEQUENCES, threshold=ADDING_THRESHOLD)
         print(f"Experiment completed.")
         writer.close()
     except Exception as e:

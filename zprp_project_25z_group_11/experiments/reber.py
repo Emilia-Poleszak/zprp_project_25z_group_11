@@ -40,8 +40,10 @@ class ReberExperiment:
                         6: [('E', 7)]}
 
         self.model = model
-        self.output_layer = nn.Linear(model.hidden_size if hasattr(model, "hidden_size") else model.out_features, 7)
-        self.optimizer = torch.optim.SGD(list(model.parameters()) + list(self.output_layer.parameters()), lr=learning_rate)
+        self.output_layer = nn.Linear(model.hidden_size if hasattr(
+            model, "hidden_size") else model.out_features, 7)
+        self.optimizer = torch.optim.SGD(list(
+            model.parameters()) + list(self.output_layer.parameters()), lr=learning_rate)
         self.loss_fn = nn.CrossEntropyLoss()
 
         self.dataset = None
@@ -57,11 +59,13 @@ class ReberExperiment:
                 sequences = f.readlines()
             assert len(sequences) > 0
         except Exception as e:
-            raise Exception(f'failed to load sequences from {RAW_DATA_DIR / RAW_REBER_DATA_FILENAME} file: {e}')
+            raise Exception(
+                f'failed to load sequences from {RAW_DATA_DIR / RAW_REBER_DATA_FILENAME} file: {e}')
 
         n_train = int(len(sequences) * REBER_TRAIN_TEST_SPLIT)
 
-        batch_one_hot = [self.string_to_one_hot(seq[:-1], REBER_ALPHABET) for seq in sequences]
+        batch_one_hot = [self.string_to_one_hot(
+            seq[:-1], REBER_ALPHABET) for seq in sequences]
         random.shuffle(batch_one_hot)
         # TODO: check if padding is necessary
         # batch_padded = pad_sequence(batch_one_hot, batch_first=True, padding_value=0)
@@ -125,10 +129,12 @@ class ReberExperiment:
                     current_history = seq_tensor[:t + 1].unsqueeze(0)
 
                     output = self.model(current_history)
-                    if isinstance(output, tuple): output = output[0]
+                    if isinstance(output, tuple):
+                        output = output[0]
 
                     last_step_output = output[:, -1, :]  # (1, hidden)
-                    logits = self.output_layer(last_step_output).squeeze(0)  # (7,)
+                    logits = self.output_layer(
+                        last_step_output).squeeze(0)  # (7,)
 
                     allowed_next = []
                     if t == 0:
@@ -142,7 +148,8 @@ class ReberExperiment:
                             if char == next_char_in_seq:
                                 next_state = new_state
                                 break
-                        if next_state is not None: reber_state = next_state
+                        if next_state is not None:
+                            reber_state = next_state
 
                     if reber_state == 7:
                         if current_char == 'E':
@@ -150,10 +157,12 @@ class ReberExperiment:
                         elif current_char == gate:
                             allowed_next = ['E']
 
-                    if not allowed_next: continue
+                    if not allowed_next:
+                        continue
 
                     valid_indices = [REBER_ALPHABET[c] for c in allowed_next]
-                    invalid_indices = [i for i in range(len(REBER_ALPHABET)) if i not in valid_indices]
+                    invalid_indices = [i for i in range(
+                        len(REBER_ALPHABET)) if i not in valid_indices]
 
                     min_valid = torch.min(logits[valid_indices]).item()
                     if len(invalid_indices) > 0:
@@ -208,13 +217,17 @@ class ReberExperiment:
             encoded[i][mapping[char]] = 1
         return torch.tensor(encoded)
 
+
 def single_test(model_name: str, timestamp: datetime, /, *, filename: str = 'single_test'):
-    if  model_name == 'LRU':
-        model = LRU(in_features=7, out_features=7, state_features=REBER_HIDDEN_SIZE)
+    if model_name == 'LRU':
+        model = LRU(in_features=7, out_features=7,
+                    state_features=REBER_HIDDEN_SIZE)
     elif model_name == 'LSTM':
-        model = nn.LSTM(input_size=7, hidden_size=REBER_HIDDEN_SIZE, num_layers=1, batch_first=True)
+        model = nn.LSTM(input_size=7, hidden_size=REBER_HIDDEN_SIZE,
+                        num_layers=1, batch_first=True)
     elif model_name == 'GRU':
-        model = nn.GRU(input_size=7, hidden_size=REBER_HIDDEN_SIZE, num_layers=1, batch_first=True)
+        model = nn.GRU(input_size=7, hidden_size=REBER_HIDDEN_SIZE,
+                       num_layers=1, batch_first=True)
     else:
         raise ValueError('Invalid model name')
     ts = timestamp.strftime("%Y%m%d_%H%M%S")
@@ -227,11 +240,14 @@ def single_test(model_name: str, timestamp: datetime, /, *, filename: str = 'sin
 
     writer.close()
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, required=True, choices=["LSTM", "GRU", "LRU"])
+    parser.add_argument("--model", type=str, required=True,
+                        choices=["LSTM", "GRU", "LRU"])
     parser.add_argument("--num-tests", type=int, required=False, default=1)
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     args = parse_args()
