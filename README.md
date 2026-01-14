@@ -81,6 +81,17 @@ python .\zprp_project_25z_group_11\experiments\multiplication.py --model MODEL_N
 
 ### Usage
 
+Reber:
+
+```bash
+pytest .\tests\reber_generator_test.py
+```
+All tests:
+
+```bash
+pytest ./...
+```
+
 Adding:
 
 ```bash
