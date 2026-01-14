@@ -13,11 +13,6 @@ the **Reber Grammar**, **Adding**, and **Multiplication** experiments using LRU,
 - All required Python dependencies installed
 - `make` available in your system
 
-## Installing dependencies
-```bash
-make requirements
-```
-
 ## Data Generators
 
 In order to run generating raw data file for Reber experiment, run:
