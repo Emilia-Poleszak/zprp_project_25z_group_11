@@ -17,7 +17,7 @@ py .\zprp_project_25z_group_11\generators\reber.py
 In order to run generating raw data file for adding or multiplication experiment, run:
 
 ```bash
-py .\zprp_project_25z_group_11\generators\components.py --task TASK_NAME --num_sequences N
+py .\zprp_project_25z_group_11\generators\components.py --task TASK_NAME --num_sequences N --rng RNG
 ```
 #### Arguments:
 `--task`: Task to generate data for</br>
@@ -30,10 +30,17 @@ py .\zprp_project_25z_group_11\generators\components.py --task TASK_NAME --num_s
 
 ## Experiments
 
+### Reber experiment
+#### Usage
+
+```bash
+py .\zprp_project_25z_group_11\experiments\reber.py
+```
+
 ### Adding experiment
 #### Usage
 ```bash
-python .\zprp_project_25z_group_11\experiments\adding.py --model MODEL_NAME --data DATA_MODE
+python .\zprp_project_25z_group_11\experiments\adding.py --model MODEL_NAME --data DATA_MODE --rng RNG
 ```
 #### Arguments:
 `--model`: Model to use</br>
@@ -50,7 +57,7 @@ python .\zprp_project_25z_group_11\experiments\adding.py --model MODEL_NAME --da
 ### Multiplication experiment
 #### Usage
 ```bash
-python .\zprp_project_25z_group_11\experiments\multiplication.py --model MODEL_NAME --data DATA_MODE
+python .\zprp_project_25z_group_11\experiments\multiplication.py --model MODEL_NAME --data DATA_MODE --rng RNG
 ```
 #### Arguments:
 `--model`: Model to use</br>
@@ -80,14 +87,6 @@ Multiplication:
 pytest .\tests\components_multiplication.py 
 ```
 
-## Experiments
-
-To execute Embedded Reber Grammar experiment, run:
-
-```bash
-py .\zprp_project_25z_group_11\experiments\reber.py
-```
-
 ## Project Organization
 
 ```
@@ -95,31 +94,25 @@ py .\zprp_project_25z_group_11\experiments\reber.py
 ├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
 ├── README.md          <- The top-level README for developers using this project.
 ├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
 │   └── raw            <- The original, immutable data dump.
 │
-├── docs               <- A default mkdocs project; see www.mkdocs.org for details
+├── docs               <- Documentation for the project.
 │
-├── models             <- Trained and serialized models, model predictions, or model summaries
-│
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`.
+├── notebooks          <- Jupyter notebooks.
+│   └── 1.0-lru-sanity-check.ipynb
 │
 ├── pyproject.toml     <- Project configuration file with package metadata for 
 │                         zprp_project_25z_group_11 and configuration for tools like black
 │
-├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-│
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
+├── reports            <- Generated analysis.
+│   ├── logs           <- Events saved from experiments
 │   └── figures        <- Generated graphics and figures to be used in reporting
 │
-├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
+├── tests              <- Tests for generators
+│   ├── components_adding_test.py
+│   └── components_multiplication_test.py
 │
-├── setup.cfg          <- Configuration file for flake8
+├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
 │
 └── zprp_project_25z_group_11   <- Source code for use in this project.
     │
@@ -127,16 +120,17 @@ py .\zprp_project_25z_group_11\experiments\reber.py
     │
     ├── config.py               <- Store useful variables and configuration
     │
-    ├── dataset.py              <- Scripts to download or generate data
-    │
-    ├── features.py             <- Code to create features for modeling
-    │
-    ├── modeling                
+    ├── experiments                
     │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
-    │   └── train.py            <- Code to train models
+    │   ├── reber.py            <- Code to run reber grammar experiment    
+    │   ├── adding.py           <- Code to run adding experiment                     
+    │   └── multiplication.py   <- Code to run multiplication experiment 
     │
-    └── plots.py                <- Code to create visualizations
+    └── generators                
+        ├── __init__.py 
+        ├── reber.py            <- Code to generate reber grammar data       
+        └── components.py       <- Code to generate sequences for adding and multiplication experiment
+    
 ```
 
 --------

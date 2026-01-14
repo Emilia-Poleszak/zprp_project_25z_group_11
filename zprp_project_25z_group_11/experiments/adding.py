@@ -1,3 +1,4 @@
+import random
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -12,7 +13,8 @@ from zprp_project_25z_group_11.config import (
 
 
 class Adding(nn.Module):
-    def __init__(self, model: nn.Module, sequence_length: int = 100, value_range: tuple[float, float] = (-1.0, 1.0),
+    def __init__(self, model: nn.Module, rng: random.Random, sequence_length: int = 100,
+                 value_range: tuple[float, float] = (-1.0, 1.0),
                  learning_rate: float = 1e-3, alpha: float = 0.9, writer: SummaryWriter | None = None):
         """
         The implementation of the forth Hochreiter experiment.
@@ -31,7 +33,7 @@ class Adding(nn.Module):
         self.optimizer = optim.RMSprop(list(self.model.parameters()) + list(self.head.parameters()), lr=learning_rate,
                                        alpha=alpha)
         self.loss_fn = nn.MSELoss()
-        self.generator = Components(length=sequence_length, value_range=value_range)
+        self.generator = Components(length=sequence_length, value_range=value_range, rng=rng)
         self.writer = writer
         self.global_step = 0
         self._init_lstm_forget_bias()
@@ -169,6 +171,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, required=True, choices=["LSTM", "GRU", "LRU"])
     parser.add_argument("--data", type=str, required=True, choices=["generate", "file"])
+    parser.add_argument("--rng", type=random.Random, required=True)
     return parser.parse_args()
 
 
@@ -179,7 +182,7 @@ if __name__ == '__main__':
 
         model = choose_model(args.model)
 
-        adding = Adding(model, sequence_length=ADDING_SEQUENCE_LENGTH, value_range=ADDING_RANGE,
+        adding = Adding(model, args.rng, sequence_length=ADDING_SEQUENCE_LENGTH, value_range=ADDING_RANGE,
                         learning_rate=ADDING_LEARNING_RATE, alpha=ADDING_ALPHA, writer=writer)
         adding.train(data_mode=args.data, threshold=ADDING_THRESHOLD)
         adding.evaluate_model(num_samples=ADDING_EVAL_SEQUENCES, threshold=ADDING_THRESHOLD)

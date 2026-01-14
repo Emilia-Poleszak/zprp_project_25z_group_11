@@ -85,31 +85,32 @@ LRU is able to learn the general rules, but because of its linear recurrence it 
 
 ### Experiment IV - Adding problem
 
-Experiment explores the long-time lag problem, when model has to remember values for long periods
+Experiment explores the long-time lag problem, model has to remember values for long periods
 of time.
 
-Sequences have length 100. Each element is a pair of components. First component is a value chosen randomly from [-1, 1].
+Generated sequences consist of 100 elements. Each element is a pair of components. First component is a value chosen randomly from [-1, 1].
 Second component is a marker. One of the first 10 values is marked 1 and this value we call x1. Another value is chosen
 from first half of the sequence (it can't be the same as x1) - it also gets marked 1 and we call it x2.
-In the rare case when first element is marked 1 we change x1 or x2 (depending if it was chosen the first or second time) to 0.
+In the rare case when first element is marked 1 we change x1 or x2 (depending on whether it was chosen the first or second time) to 0.
 First and last value are marked -1. The rest is marked 0. Target value is 
 $0.5 + \Large\frac{x1 + x2}{4.0}$ - sum of the values marked by 1 scaled to [0, 1] interval.
 
 Because the second half of the sequence must be "ignored" model must learn to keep only marked values and
 not lose them through the time. This is a problem for many recurrent models.
 
-In the experiment we tested 3 models: LSTM (PyTorch), GRU (PyTorch) and LRU (Gothos-pytorch).
-For GRU and LSTM hidden size was set to 64. RMSprop with 10<sup>-3</sup> learning rate, which in Arjovsky & Shah, 2016 article demonstrated
+In the experiment we tested 3 models: LSTM from [pytorch](https://docs.pytorch.org/docs/stable/generated/torch.nn.LSTM.html), GRU from [pytorch](https://docs.pytorch.org/docs/stable/generated/torch.nn.GRU.html) and LRU from [gothos/lru-pytorch](https://github.com/Gothos/LRU-pytorch/tree/main/LRU_pytorch).
+Hidden size was set to 64. Optimizer RMSprop with 10<sup>-3</sup> learning rate was used, as in Arjovsky & Shah, 2016 article it demonstrated
 faster convergence in long-time lag problems than typically used SGD. 
 Models were trained using on-line learning (no batches), in each iteration
-new was generated and used to train. Gradient clipping was applied to avoid
-gradient explosion. Conditions to end training were: average training error
+new sequence was generated and used to train. Gradient clipping was applied to avoid
+gradient explosion. LSTM's forget gate was initialized to ensure long-term memory. Conditions to end training were: average training error
 below 0.01 and 2000 most recent sequences processed correctly. Sequence
 processed correctly means absolute error < 0.04. Results were visualised
 in Tensorboard. Evaluation on 2560 new sequences was run after learning.
 
 For LSTM and GRU models we observed learning and both were able
-to achieve conditions necessary to finish training. 
+to achieve conditions necessary to finish training. Graphs 2.1 and 2.2 present MSE loss during
+example trials for each model.
 
 *Graph 2.1. MSE error while training LSTM model (example trial).*
 <img src="../../reports/figures/Train_MSE_LSTM.svg" alt="isolated"/>
@@ -126,10 +127,11 @@ Below are presented average results from 10 trials.
 | GRU   |   6.8 out of 2560   |      69 922.7 |
 | LSTM  |   2.4 out of 2560   |      66 169.9 |
 
-For LRU model we didn't observe learning. Accuracy in evaluation (after 100 000 training iterations)
+For LRU model we didn't observe learning in presented conditions. Accuracy in evaluation (after 100 000 training iterations)
 was around 0.14-0.16. This matches the scheme of most models in long-time lag problems.
-They naively predict mean value 0 - in this case 0.5. Probability of
-target satisfying inequality: |target - 0.5| < 0.04 is ~15.4%.
+They naively predict mean value - in this case 0.5. Probability of
+target satisfying inequality: |target - 0.5| < 0.04 is ~15.4%. Graph 2.3 presents 
+MSE loss during LRU training.
 
 *Graph 2.3. MSE error while training LRU model (example trial).*
 <img src="../../reports/figures/Train_MSE_LRU.svg" alt="isolated"/>
