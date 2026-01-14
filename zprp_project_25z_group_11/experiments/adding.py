@@ -177,8 +177,8 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    for i in range(10):
-        writer = SummaryWriter(log_dir=ADDING_LOGS_DIR / f"exp_{i}")
+    try:
+        writer = SummaryWriter(log_dir=ADDING_LOGS_DIR / f"exp_adding")
 
         model = choose_model(args.model)
 
@@ -186,6 +186,9 @@ if __name__ == '__main__':
                         learning_rate=ADDING_LEARNING_RATE, alpha=ADDING_ALPHA, writer=writer)
         adding.train(data_mode=args.data, threshold=ADDING_THRESHOLD)
         adding.evaluate_model(num_samples=ADDING_EVAL_SEQUENCES, threshold=ADDING_THRESHOLD)
-
-        print(f"Experiment {i} completed.")
+        print(f"Experiment completed.")
         writer.close()
+    except Exception as e:
+        print("Error detected:", e)
+    except KeyboardInterrupt:
+        print("\nProgram interrupted.")

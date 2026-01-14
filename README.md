@@ -4,78 +4,82 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-A short description of the project.
+This project supports data generation, training, and testing for 
+the **Reber Grammar**, **Adding**, and **Multiplication** experiments using LRU, LSTM and GRU models.
+
+## Requirements
+
+- Python installed and available as `python`
+- All required Python dependencies installed
+- `make` available in your system
 
 ## Data Generators
 
 In order to run generating raw data file for Reber experiment, run:
 
 ```bash
-py .\zprp_project_25z_group_11\generators\reber.py
-
+make reber_data
 ```
-In order to run generating raw data file for adding or multiplication experiment, run:
+
+In order to run generating raw data file for adding and multiplication experiment, run:
 
 ```bash
-py .\zprp_project_25z_group_11\generators\components.py --task TASK_NAME --num_sequences N --rng RNG
+make adding_data NUM=10000 RNG=42
+make multiplication_data NUM=10000 RNG=42
 ```
 #### Arguments:
-`--task`: Task to generate data for</br>
-* `adding`</br>
-* `multiplication` 
+`NUM`: Number of sequences to generate (integer)
 
-`--num_sequences`: Number of sequences to generate (integer)</br>
-
-`--rng`: Random RNG (integer)
+`RNG`: Random RNG (integer)
 
 ## Experiments
 
 ### Reber experiment
 #### Usage
 ```bash
-py .\zprp_project_25z_group_11\experiments\reber.py --model MODEL_NAME --num-tests NUMBER_OF_TESTS
+make reber_exp MODEL=LSTM NUM_TESTS=1
 ```
 #### Arguments:
-`--model`: Model to use
+`MODEL`: Model to use
 * `LSTM` PyTorch implementation of long short-term memory (LSTM) RNN 
 * `GRU`  PyTorch implementation of gated recurrent unit (GRU) RNN
 * `LRU`  Gothos/LRU-pytorch implementation of Linear Recurrent Units (LRU)
 
-`--num-tests`: Number of tests to run (default value - 1)
+`NUM_TESTS`: Number of tests to run (default value - 1)
 
 ### Adding experiment
 #### Usage
 ```bash
-python .\zprp_project_25z_group_11\experiments\adding.py --model MODEL_NAME --data DATA_MODE --rng RNG
+make adding_exp MODEL=LSTM DATA=generate RNG=42
 ```
 #### Arguments:
-`--model`: Model to use</br>
+`MODEL`: Model to use</br>
 * `LSTM` PyTorch implementation of long short-term memory (LSTM) RNN </br>
 * `GRU`  PyTorch implementation of gated recurrent unit (GRU) RNN </br>
 * `LRU`  Gothos/LRU-pytorch implementation of Linear Recurrent Units (LRU)
 
-`--data`: Data source</br>
+`DATA`: Data source</br>
 * `generate` generate new sequences while learning</br>
 * `file`     load sequences from file
 
-`--rng`: Random RNG (integer)
+`RNG`: Random RNG (integer)
 
 ### Multiplication experiment
 #### Usage
 ```bash
-python .\zprp_project_25z_group_11\experiments\multiplication.py --model MODEL_NAME --data DATA_MODE --rng RNG
+make multiplication_exp MODEL=LSTM DATA=generate RNG=42
 ```
 #### Arguments:
-`--model`: Model to use</br>
+`MODEL`: Model to use</br>
 * `LSTM` PyTorch implementation of long short-term memory (LSTM) RNN </br>
 * `GRU`  PyTorch implementation of gated recurrent unit (GRU) RNN </br>
 * `LRU`  Gothos/LRU-pytorch implementation of Linear Recurrent Units (LRU)
 
-`--data`: Data source</br>
+`DATA`: Data source</br>
 * `generate` generate new sequences while learning</br>
 * `file`     load sequences from file
 
-`--rng`: Random RNG (integer)
+`RNG`: Random RNG (integer)
 
 ## Tests
 
@@ -84,24 +88,24 @@ python .\zprp_project_25z_group_11\experiments\multiplication.py --model MODEL_N
 Reber:
 
 ```bash
-pytest .\tests\reber_generator_test.py
+make test_reber
 ```
-All tests:
 
+All tests:
 ```bash
-pytest ./...
+make test_all
 ```
 
 Adding:
 
 ```bash
-pytest .\tests\components_adding.py
+make test_adding
 ````
 
 Multiplication:
 
 ```bash
-pytest .\tests\components_multiplication.py 
+make test_multiplication
 ```
 
 ## Project Organization
@@ -126,6 +130,7 @@ pytest .\tests\components_multiplication.py
 │   └── figures        <- Generated graphics and figures to be used in reporting
 │
 ├── tests              <- Tests for generators
+│   ├── reber_generator_test.py
 │   ├── components_adding_test.py
 │   └── components_multiplication_test.py
 │

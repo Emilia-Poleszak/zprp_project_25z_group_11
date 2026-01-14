@@ -99,7 +99,8 @@ class Multiplication(nn.Module):
             if data_mode == "generate":
                 seq, target = self.generator.generate_multiplication()
             else:
-                seq, target, start_line_number = self.generator.get_data(start_line_number, MULTIPLICATION_DATA_FILENAME)
+                seq, target, start_line_number = self.generator.get_data(start_line_number,
+                                                                         MULTIPLICATION_DATA_FILENAME)
 
             sequence = tensor(seq, dtype=float32).unsqueeze(0)
             targets = tensor([[target]], dtype=float32)
@@ -167,6 +168,7 @@ class Multiplication(nn.Module):
 
         print(f"Accuracy: {accuracy:.2f}%, average error: {avg_error:.4f}")
 
+
 def choose_model(input_model: str):
     model = None
     if input_model == "LSTM":
@@ -185,15 +187,20 @@ def parse_args():
     parser.add_argument("--rng", type=random.Random, required=True)
     return parser.parse_args()
 
+
 if __name__ == '__main__':
     args = parse_args()
-    for i in range(10):
-        writer = SummaryWriter(log_dir=MULTIPLICATION_LOGS_DIR / f"exp_{i}")
+    try:
+        writer = SummaryWriter(log_dir=MULTIPLICATION_LOGS_DIR / f"exp_multiplication")
         model = choose_model(input_model=args.model)
 
         multiplication = Multiplication(model, writer, args.rng)
         multiplication.train_loop(data_mode=args.data)
         multiplication.evaluate()
 
-        print(f"Experiment {i} completed.")
+        print(f"Experiment completed.")
         writer.close()
+    except Exception as e:
+        print("Error detected:", e)
+    except KeyboardInterrupt:
+        print("\nProgram interrupted.")

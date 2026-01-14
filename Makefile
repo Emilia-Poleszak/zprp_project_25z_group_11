@@ -39,9 +39,56 @@ format:
 	ruff check --fix
 	ruff format
 
+#################################################################################
+# DATA GENERATION                                                                #
+#################################################################################
 
+# Generate Reber raw data
+reber_data:
+	$(PYTHON_INTERPRETER) ./zprp_project_25z_group_11/generators/reber.py
 
+# Generate Adding or Multiplication data
+# Usage: make adding_data NUM=1000 RNG=42
+adding_data:
+	$(PYTHON_INTERPRETER) ./zprp_project_25z_group_11/generators/components.py --task adding --num_sequences $(NUM) --rng $(RNG)
 
+multiplication_data:
+	$(PYTHON_INTERPRETER) ./zprp_project_25z_group_11/generators/components.py --task multiplication --num_sequences $(NUM) --rng $(RNG)
+
+#################################################################################
+# EXPERIMENTS                                                                      #
+#################################################################################
+
+# Reber experiment
+# Usage: make reber_exp MODEL=LSTM NUM_TESTS=1
+reber_exp:
+	$(PYTHON_INTERPRETER) ./zprp_project_25z_group_11/experiments/reber.py --model $(MODEL) --num-tests $(NUM_TESTS)
+
+# Adding experiment
+# Usage: make adding_exp MODEL=LSTM DATA=generate RNG=42
+adding_exp:
+	$(PYTHON_INTERPRETER) ./zprp_project_25z_group_11/experiments/adding.py --model $(MODEL) --data $(DATA) --rng $(RNG)
+
+# Multiplication experiment
+# Usage: make multiplication_exp MODEL=LSTM DATA=generate RNG=42
+multiplication_exp:
+	$(PYTHON_INTERPRETER) ./zprp_project_25z_group_11/experiments/multiplication.py --model $(MODEL) --data $(DATA) --rng $(RNG)
+
+#################################################################################
+# TESTS                                                                      #
+#################################################################################
+
+test_reber:
+	pytest ./tests/reber_generator_test.py
+
+test_adding:
+	pytest ./tests/components_adding.py
+
+test_multiplication:
+	pytest ./tests/components_multiplication.py
+
+test_all:
+	pytest ./...
 
 ## Set up Python interpreter environment
 .PHONY: create_environment
