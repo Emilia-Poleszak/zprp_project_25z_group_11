@@ -28,11 +28,11 @@ Graphs 1.1, 1.2, and 1.3 present the condition score and loss over epochs from s
 ---------
 <div style="display: flex; justify-content: space-around;">
     <div style="width: 48%; text-align: center;">
-        <img src="../../reports/figures/reber-score-example-LSTM.svg" alt="reber-score-LSTM" style="width: 100%;"/>
+        <img src="/figures/reber-score-example-LSTM.svg" alt="reber-score-LSTM" style="width: 100%;"/>
         <p>(a)</p>
     </div>
     <div style="width: 48%; text-align: center;">
-        <img src="../../reports/figures/reber-loss-example-LSTM.svg" alt="reber-loss-LSTM" style="width: 100%;"/>
+        <img src="/figures/reber-loss-example-LSTM.svg" alt="reber-loss-LSTM" style="width: 100%;"/>
         <p>(b)</p>
     </div>
 </div>
@@ -44,11 +44,11 @@ Graphs 1.1, 1.2, and 1.3 present the condition score and loss over epochs from s
 
 <div style="display: flex; justify-content: space-around;">
     <div style="width: 48%; text-align: center;">
-        <img src="../../reports/figures/reber-score-example-GRU.svg" alt="reber-score-GRU" style="width: 100%;"/>
+        <img src="/figures/reber-score-example-GRU.svg" alt="reber-score-GRU" style="width: 100%;"/>
         <p>(a)</p>
     </div>
     <div style="width: 48%; text-align: center;">
-        <img src="../../reports/figures/reber-loss-example-GRU.svg" alt="reber-loss-GRU" style="width: 100%;"/>
+        <img src="/figures/reber-loss-example-GRU.svg" alt="reber-loss-GRU" style="width: 100%;"/>
         <p>(b)</p>
     </div>
 </div>
@@ -60,11 +60,11 @@ Graphs 1.1, 1.2, and 1.3 present the condition score and loss over epochs from s
 
 <div style="display: flex; justify-content: space-around;">
     <div style="width: 48%; text-align: center;">
-        <img src="../../reports/figures/reber-score-example-LRU.svg" alt="reber-score-LRU" style="width: 100%;"/>
+        <img src="/figures/reber-score-example-LRU.svg" alt="reber-score-LRU" style="width: 100%;"/>
         <p>(a)</p>
     </div>
     <div style="width: 48%; text-align: center;">
-        <img src="../../reports/figures/reber-loss-example-LRU.svg" alt="reber-loss-LRU" style="width: 100%;"/>
+        <img src="/figures/reber-loss-example-LRU.svg" alt="reber-loss-LRU" style="width: 100%;"/>
         <p>(b)</p>
     </div>
 </div>
@@ -113,10 +113,10 @@ to achieve conditions necessary to finish training. Graphs 2.1 and 2.2 present M
 example trials for each model.
 
 *Graph 2.1. MSE error while training LSTM model (example trial).*
-<img src="../../reports/figures/Train_MSE_LSTM.svg" alt="isolated"/>
+<img src="/figures/Train_MSE_LSTM.svg" alt="isolated"/>
 
 *Graph 2.2. MSE error while training GRU model (example trial).*
-<img src="../../reports/figures/Train_MSE_GRU.svg" alt="isolated"/>
+<img src="/figures/Train_MSE_GRU.svg" alt="isolated"/>
 
 Below are presented average results from 10 trials.
 
@@ -134,7 +134,7 @@ target satisfying inequality: |target - 0.5| < 0.04 is ~15.4%. Graph 2.3 present
 MSE loss during LRU training.
 
 *Graph 2.3. MSE error while training LRU model (example trial).*
-<img src="../../reports/figures/Train_MSE_LRU.svg" alt="isolated"/>
+<img src="/figures/Train_MSE_LRU.svg" alt="isolated"/>
 
 ### Experiment V - Multiplication Problem
 
@@ -192,12 +192,12 @@ Graphs 3.1-3 shows examples of training, one for each model.
 
 *Graph 3.1. Example of MSE error while training LSTM model.*
 
-<img src="../../reports/figures/Train_MSE_M_LSTM.svg" alt="isolated"/>
+<img src="/figures/Train_MSE_M_LSTM.svg" alt="isolated"/>
 
 *Graph 3.2. Example of MSE error while training LRU model.*
 
-<img src="../../reports/figures/Train_MSE_M_LRU.svg" alt="isolated"/>
+<img src="/figures/Train_MSE_M_LRU.svg" alt="isolated"/>
 
 *Graph 3.3. Example of MSE error while training GRU model.*
 
-<img src="../../reports/figures/Train_MSE_M_GRU.svg" alt="isolated"/>
+<img src="/figures/Train_MSE_M_GRU.svg" alt="isolated"/>
